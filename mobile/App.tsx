@@ -1,5 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useEffect, useState } from 'react';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import SplashScreen from './src/screens/SplashScreen';
 import OnboardingScreen from './src/screens/OnboardingScreen';
@@ -22,13 +23,11 @@ export default function App() {
     });
   }, []);
 
-  if (appState === 'loading') {
-    return <SplashScreen />;
-  }
-
-  if (appState === 'onboarding') {
-    return <OnboardingScreen onDone={() => setAppState('home')} />;
-  }
-
-  return <HomeScreen />;
+  return (
+    <SafeAreaProvider>
+      {appState === 'loading' && <SplashScreen />}
+      {appState === 'onboarding' && <OnboardingScreen onDone={() => setAppState('home')} />}
+      {appState === 'home' && <HomeScreen />}
+    </SafeAreaProvider>
+  );
 }

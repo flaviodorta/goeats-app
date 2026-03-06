@@ -71,9 +71,8 @@ function Dots({ activeIndex }: { activeIndex: number }) {
       {slides.map((_, index) => (
         <View
           key={index}
-          // O dot ativo é maior (w-4) e opaco; os inativos são menores e translúcidos
           className={[
-            'h-2 rounded-full mx-1 transition-all',
+            'h-2 rounded-full mx-1',
             index === activeIndex ? 'w-4 bg-white' : 'w-2 bg-white/40',
           ].join(' ')}
         />
@@ -95,7 +94,7 @@ export default function OnboardingScreen({ onDone }: Props) {
 
   const [activeIndex, setActiveIndex] = useState(0);
 
-  const flatListRef = useRef<FlatList>(null);
+  const flat_list_ref = useRef<FlatList>(null);
 
   if (!fontsLoaded) {
     return (
@@ -105,7 +104,7 @@ export default function OnboardingScreen({ onDone }: Props) {
     );
   }
 
-  const onViewableItemsChanged = ({
+  const on_viewable_items_changed = ({
     viewableItems,
   }: {
     viewableItems: ViewToken[];
@@ -115,14 +114,14 @@ export default function OnboardingScreen({ onDone }: Props) {
     }
   };
 
-  const isLastSlide = activeIndex === slides.length - 1;
+  const is_last_slide = activeIndex === slides.length - 1;
 
-  const handleNext = async () => {
-    if (isLastSlide) {
+  const handle_next = async () => {
+    if (is_last_slide) {
       await AsyncStorage.setItem('hasSeenOnboarding', 'true');
       onDone();
     } else {
-      flatListRef.current?.scrollToIndex({
+      flat_list_ref.current?.scrollToIndex({
         index: activeIndex + 1,
         animated: true,
       });
@@ -134,14 +133,14 @@ export default function OnboardingScreen({ onDone }: Props) {
       <StatusBar style='light' />
 
       <FlatList
-        ref={flatListRef}
+        ref={flat_list_ref}
         data={slides}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => <Slide item={item} />}
         horizontal
         pagingEnabled
         showsHorizontalScrollIndicator={false}
-        onViewableItemsChanged={onViewableItemsChanged}
+        onViewableItemsChanged={on_viewable_items_changed}
         viewabilityConfig={{ viewAreaCoveragePercentThreshold: 50 }}
       />
 
@@ -149,7 +148,7 @@ export default function OnboardingScreen({ onDone }: Props) {
         <Dots activeIndex={activeIndex} />
 
         <TouchableOpacity
-          onPress={handleNext}
+          onPress={handle_next}
           className='mt-8 w-full bg-white rounded-2xl py-4 items-center'
           activeOpacity={0.85}
         >
@@ -157,11 +156,11 @@ export default function OnboardingScreen({ onDone }: Props) {
             className='text-primary text-base'
             style={{ fontFamily: 'Poppins_600SemiBold' }}
           >
-            {isLastSlide ? 'Começar' : 'Próximo'}
+            {is_last_slide ? 'Começar' : 'Próximo'}
           </Text>
         </TouchableOpacity>
 
-        {!isLastSlide && (
+        {!is_last_slide && (
           <TouchableOpacity
             onPress={async () => {
               await AsyncStorage.setItem('hasSeenOnboarding', 'true');

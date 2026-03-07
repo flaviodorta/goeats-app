@@ -1,15 +1,21 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { Colors } from '../../constants/colors';
 import { restaurants } from '../../data/mock';
+import { RootStackNavigation } from '../../navigation/types';
 
 type Props = {
   item: (typeof restaurants)[0];
 };
 
 export default function RestaurantCard({ item }: Props) {
+  const navigation = useNavigation<RootStackNavigation>();
   return (
     <TouchableOpacity
+      onPress={() =>
+        navigation.navigate('RestaurantMenu', { restaurant: item })
+      }
       className='mx-5 mb-4 bg-surface rounded-3xl overflow-hidden'
       style={{
         elevation: 3,
@@ -73,6 +79,7 @@ export default function RestaurantCard({ item }: Props) {
         >
           {item.name}
         </Text>
+
         <Text
           style={{
             fontFamily: 'Poppins_400Regular',
@@ -90,6 +97,7 @@ export default function RestaurantCard({ item }: Props) {
             size={13}
             color={Colors.textSecondary}
           />
+
           <Text
             style={{
               fontFamily: 'Poppins_400Regular',
@@ -100,7 +108,9 @@ export default function RestaurantCard({ item }: Props) {
           >
             {item.deliveryTime}
           </Text>
+
           <View className='w-1 h-1 rounded-full bg-disabled mx-3' />
+
           <MaterialCommunityIcons
             name='moped-outline'
             size={13}
@@ -110,6 +120,7 @@ export default function RestaurantCard({ item }: Props) {
                 : Colors.textSecondary
             }
           />
+
           <Text
             style={{
               fontFamily: 'Poppins_600SemiBold',

@@ -4,14 +4,24 @@ import { Colors } from '../../constants/colors';
 
 export default function SearchBar() {
   return (
-    <View className="mx-5 mb-4">
+    <View className='mx-5 mb-4'>
       <View
-        className="flex-row items-center bg-surface rounded-2xl px-4 h-12"
-        style={{ elevation: 3, shadowColor: '#000', shadowOpacity: 0.08, shadowRadius: 8 }}
+        className='flex-row items-center bg-surface rounded-2xl px-4 h-12'
+        style={{
+          elevation: 3,
+          shadowColor: '#000',
+          shadowOpacity: 0.08,
+          shadowRadius: 8,
+        }}
       >
-        <MaterialCommunityIcons name="magnify" size={20} color={Colors.textSecondary} />
+        <MaterialCommunityIcons
+          name='magnify'
+          size={20}
+          color={Colors.textSecondary}
+        />
+
         <TextInput
-          placeholder="Buscar comida ou restaurantes"
+          placeholder='Buscar comida ou restaurantes'
           placeholderTextColor={Colors.disabled}
           style={{
             flex: 1,

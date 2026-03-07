@@ -36,7 +36,11 @@ type Props = {
   onSelect: (address: Address) => void;
 };
 
-export default function AddressSearchModal({ visible, onClose, onSelect }: Props) {
+export default function AddressSearchModal({
+  visible,
+  onClose,
+  onSelect,
+}: Props) {
   const [cep, setCep] = useState('');
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<Address | null>(null);
@@ -107,37 +111,57 @@ export default function AddressSearchModal({ visible, onClose, onSelect }: Props
   };
 
   return (
-    <Modal visible={visible} animationType="slide" transparent>
+    <Modal visible={visible} animationType='slide' transparent>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={{ flex: 1 }}
       >
-        <View className="flex-1 bg-black/50 justify-end">
-          <View className="bg-surface rounded-t-3xl px-6 pt-4 pb-10">
+        <View className='flex-1 bg-black/50 justify-end'>
+          <View className='bg-surface rounded-t-3xl px-6 pt-4 pb-10'>
+            <View className='w-10 h-1 rounded-full bg-border self-center mb-6' />
 
-            <View className="w-10 h-1 rounded-full bg-border self-center mb-6" />
-
-            <View className="flex-row items-center justify-between mb-6">
-              <Text style={{ fontFamily: 'Poppins_700Bold', fontSize: 18, color: Colors.textPrimary }}>
+            <View className='flex-row items-center justify-between mb-6'>
+              <Text
+                style={{
+                  fontFamily: 'Poppins_700Bold',
+                  fontSize: 18,
+                  color: Colors.textPrimary,
+                }}
+              >
                 Onde você está?
               </Text>
               <TouchableOpacity onPress={handle_close}>
-                <MaterialCommunityIcons name="close" size={24} color={Colors.textSecondary} />
+                <MaterialCommunityIcons
+                  name='close'
+                  size={24}
+                  color={Colors.textSecondary}
+                />
               </TouchableOpacity>
             </View>
 
-            <Text style={{ fontFamily: 'Poppins_400Regular', fontSize: 13, color: Colors.textSecondary, marginBottom: 8 }}>
+            <Text
+              style={{
+                fontFamily: 'Poppins_400Regular',
+                fontSize: 13,
+                color: Colors.textSecondary,
+                marginBottom: 8,
+              }}
+            >
               Digite seu CEP para encontrar restaurantes perto de você
             </Text>
 
-            <View className="flex-row items-center bg-background border border-border rounded-2xl px-4 h-14 mb-4">
-              <MaterialCommunityIcons name="map-marker-outline" size={20} color={Colors.primary} />
+            <View className='flex-row items-center bg-background border border-border rounded-2xl px-4 h-14 mb-4'>
+              <MaterialCommunityIcons
+                name='map-marker-outline'
+                size={20}
+                color={Colors.primary}
+              />
               <TextInput
                 value={cep}
                 onChangeText={handle_change}
-                placeholder="00000-000"
+                placeholder='00000-000'
                 placeholderTextColor={Colors.disabled}
-                keyboardType="numeric"
+                keyboardType='numeric'
                 maxLength={9}
                 style={{
                   flex: 1,
@@ -148,32 +172,74 @@ export default function AddressSearchModal({ visible, onClose, onSelect }: Props
                 }}
                 autoFocus
               />
-              {loading && <ActivityIndicator size="small" color={Colors.primary} />}
+              {loading && (
+                <ActivityIndicator size='small' color={Colors.primary} />
+              )}
             </View>
 
             {error !== '' && (
-              <Text style={{ fontFamily: 'Poppins_400Regular', fontSize: 13, color: Colors.error, marginBottom: 12 }}>
+              <Text
+                style={{
+                  fontFamily: 'Poppins_400Regular',
+                  fontSize: 13,
+                  color: Colors.error,
+                  marginBottom: 12,
+                }}
+              >
                 {error}
               </Text>
             )}
 
             {result && (
-              <View className="bg-background rounded-2xl p-4 mb-6">
-                <View className="flex-row items-start">
-                  <MaterialCommunityIcons name="map-marker" size={20} color={Colors.primary} style={{ marginTop: 2 }} />
-                  <View className="ml-3 flex-1">
+              <View className='bg-background rounded-2xl p-4 mb-6'>
+                <View className='flex-row items-start'>
+                  <MaterialCommunityIcons
+                    name='map-marker'
+                    size={20}
+                    color={Colors.primary}
+                    style={{ marginTop: 2 }}
+                  />
+                  <View className='ml-3 flex-1'>
                     {result.street !== '' && (
-                      <Text style={{ fontFamily: 'Poppins_600SemiBold', fontSize: 14, color: Colors.textPrimary }}>
+                      <Text
+                        style={{
+                          fontFamily: 'Poppins_600SemiBold',
+                          fontSize: 14,
+                          color: Colors.textPrimary,
+                        }}
+                      >
                         {result.street}
                       </Text>
                     )}
-                    <Text style={{ fontFamily: 'Poppins_400Regular', fontSize: 13, color: Colors.textSecondary }}>
+
+                    <Text
+                      style={{
+                        fontFamily: 'Poppins_400Regular',
+                        fontSize: 13,
+                        color: Colors.textSecondary,
+                      }}
+                    >
                       {result.neighborhood}
                     </Text>
-                    <Text style={{ fontFamily: 'Poppins_400Regular', fontSize: 13, color: Colors.textSecondary }}>
+
+                    <Text
+                      style={{
+                        fontFamily: 'Poppins_400Regular',
+                        fontSize: 13,
+                        color: Colors.textSecondary,
+                      }}
+                    >
                       {result.city} - {result.state}
                     </Text>
-                    <Text style={{ fontFamily: 'Poppins_400Regular', fontSize: 12, color: Colors.disabled, marginTop: 2 }}>
+
+                    <Text
+                      style={{
+                        fontFamily: 'Poppins_400Regular',
+                        fontSize: 12,
+                        color: Colors.disabled,
+                        marginTop: 2,
+                      }}
+                    >
                       CEP: {result.cep}
                     </Text>
                   </View>
@@ -184,15 +250,22 @@ export default function AddressSearchModal({ visible, onClose, onSelect }: Props
             <TouchableOpacity
               onPress={handle_confirm}
               disabled={!result}
-              className="rounded-2xl h-14 items-center justify-center"
-              style={{ backgroundColor: result ? Colors.primary : Colors.disabled }}
+              className='rounded-2xl h-14 items-center justify-center'
+              style={{
+                backgroundColor: result ? Colors.primary : Colors.disabled,
+              }}
               activeOpacity={0.85}
             >
-              <Text style={{ fontFamily: 'Poppins_600SemiBold', fontSize: 15, color: '#FFF' }}>
+              <Text
+                style={{
+                  fontFamily: 'Poppins_600SemiBold',
+                  fontSize: 15,
+                  color: '#FFF',
+                }}
+              >
                 Confirmar endereço
               </Text>
             </TouchableOpacity>
-
           </View>
         </View>
       </KeyboardAvoidingView>

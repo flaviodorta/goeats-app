@@ -15,10 +15,8 @@ import CartBar from '../components/menu/CartBar';
 import MenuItemComponent from '../components/menu/MenuItem';
 import MenuTabs from '../components/menu/MenuTabs';
 import { Colors } from '../constants/colors';
-import { MenuItem, Restaurant } from '../data/mock';
 import { RootStackParamList } from '../navigation/types';
-
-type CartItem = { item: MenuItem; quantity: number };
+import { useCartStore } from '../stores/cartStore';
 
 export default function RestaurantMenuScreen() {
   const insets = useSafeAreaInsets();
@@ -28,7 +26,11 @@ export default function RestaurantMenuScreen() {
 
   const [fontsLoaded] = useFonts({ Poppins_400Regular, Poppins_600SemiBold, Poppins_700Bold });
   const [selectedTab, setSelectedTab] = useState('popular');
-  const [cart, setCart] = useState<Record<string, CartItem>>({});
+
+  const { items, addItem, removeItem, totalItems, totalPrice } = useCartStore();
+
+  const addToCart = (item: (typeof restaurant.menu)[0]) => addItem(restaurant, item);
+  const removeFromCart = (item: (typeof restaurant.menu)[0]) => removeItem(item.id);
 
   if (!fontsLoaded) {
     return (
@@ -38,28 +40,10 @@ export default function RestaurantMenuScreen() {
     );
   }
 
-  const add_to_cart = (item: MenuItem) => {
-    setCart((prev) => ({
-      ...prev,
-      [item.id]: { item, quantity: (prev[item.id]?.quantity ?? 0) + 1 },
-    }));
-  };
+  const itemCount = totalItems();
+  const orderTotal = totalPrice();
 
-  const remove_from_cart = (item: MenuItem) => {
-    setCart((prev) => {
-      const current = prev[item.id]?.quantity ?? 0;
-      if (current <= 1) {
-        const { [item.id]: _, ...rest } = prev;
-        return rest;
-      }
-      return { ...prev, [item.id]: { item, quantity: current - 1 } };
-    });
-  };
-
-  const total_items = Object.values(cart).reduce((sum, c) => sum + c.quantity, 0);
-  const total_price = Object.values(cart).reduce((sum, c) => sum + c.item.price * c.quantity, 0);
-
-  const filtered_menu = restaurant.menu.filter((item) => item.tab === selectedTab);
+  const filteredMenu = restaurant.menu.filter((item) => item.tab === selectedTab);
 
   return (
     <View className="flex-1 bg-background">
@@ -144,24 +128,24 @@ export default function RestaurantMenuScreen() {
       <MenuTabs selected={selectedTab} onSelect={setSelectedTab} />
 
       {/* Menu list */}
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: total_items > 0 ? 100 : 20 }}>
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: itemCount > 0 ? 100 : 20 }}>
         <Text className="px-5 pt-5 pb-2" style={{ fontFamily: 'Poppins_700Bold', fontSize: 16, color: Colors.textPrimary }}>
           {selectedTab === 'popular' ? 'Mais pedidos' : selectedTab === 'mains' ? 'Pratos' : selectedTab === 'drinks' ? 'Bebidas' : 'Sobremesas'}
         </Text>
-        {filtered_menu.map((item) => (
+        {filteredMenu.map((item) => (
           <MenuItemComponent
             key={item.id}
             item={item}
-            quantity={cart[item.id]?.quantity ?? 0}
-            onAdd={() => add_to_cart(item)}
-            onRemove={() => remove_from_cart(item)}
+            quantity={items[item.id]?.quantity ?? 0}
+            onAdd={() => addToCart(item)}
+            onRemove={() => removeFromCart(item)}
           />
         ))}
       </ScrollView>
 
-      {total_items > 0 && (
+      {itemCount > 0 && (
         <View style={{ position: 'absolute', bottom: 0, left: 0, right: 0 }}>
-          <CartBar total={total_price} itemCount={total_items} onPress={() => {}} />
+          <CartBar total={orderTotal} itemCount={itemCount} onPress={() => {}} />
         </View>
       )}
     </View>

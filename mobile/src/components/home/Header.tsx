@@ -2,6 +2,8 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { Address } from '../address/AddressSearchModal';
 import { Colors } from '../../constants/colors';
+import { useNavigation } from '@react-navigation/native';
+import { PrivateStackNavigation } from '../../navigation/types';
 
 type Props = {
   address: Address | null;
@@ -9,35 +11,75 @@ type Props = {
 };
 
 export default function Header({ address, onAddressPress }: Props) {
+  const navigation = useNavigation<PrivateStackNavigation>();
+
   return (
-    <View className="flex-row items-center justify-between px-5 py-3">
-      <TouchableOpacity onPress={onAddressPress} className="flex-1 mr-4" activeOpacity={0.7}>
-        <Text style={{ fontFamily: 'Poppins_400Regular', fontSize: 11, color: Colors.textSecondary }}>
+    <View className='flex-row items-center justify-between px-5 py-3'>
+      <TouchableOpacity
+        onPress={onAddressPress}
+        className='flex-1 mr-4'
+        activeOpacity={0.7}
+      >
+        <Text
+          style={{
+            fontFamily: 'Poppins_400Regular',
+            fontSize: 11,
+            color: Colors.textSecondary,
+          }}
+        >
           ENTREGAR EM
         </Text>
-        <View className="flex-row items-center">
+        <View className='flex-row items-center'>
           <Text
             numberOfLines={1}
-            style={{ fontFamily: 'Poppins_700Bold', fontSize: 15, color: Colors.textPrimary, flexShrink: 1 }}
+            style={{
+              fontFamily: 'Poppins_700Bold',
+              fontSize: 15,
+              color: Colors.textPrimary,
+              flexShrink: 1,
+            }}
           >
             {address ? address.display : 'Selecionar endereço'}
           </Text>
-          <MaterialCommunityIcons name="chevron-down" size={20} color={Colors.primary} />
+          <MaterialCommunityIcons
+            name='chevron-down'
+            size={20}
+            color={Colors.primary}
+          />
         </View>
       </TouchableOpacity>
 
-      <View className="flex-row items-center gap-3">
+      <View className='flex-row items-center gap-3'>
         <TouchableOpacity
-          className="w-10 h-10 rounded-full bg-surface items-center justify-center"
-          style={{ elevation: 2, shadowColor: '#000', shadowOpacity: 0.08, shadowRadius: 4 }}
+          className='w-10 h-10 rounded-full bg-surface items-center justify-center'
+          style={{
+            elevation: 2,
+            shadowColor: '#000',
+            shadowOpacity: 0.08,
+            shadowRadius: 4,
+          }}
         >
-          <MaterialCommunityIcons name="bell-outline" size={22} color={Colors.textPrimary} />
+          <MaterialCommunityIcons
+            name='bell-outline'
+            size={22}
+            color={Colors.textPrimary}
+          />
         </TouchableOpacity>
         <TouchableOpacity
-          className="w-10 h-10 rounded-full bg-surface items-center justify-center"
-          style={{ elevation: 2, shadowColor: '#000', shadowOpacity: 0.08, shadowRadius: 4 }}
+          className='w-10 h-10 rounded-full bg-surface items-center justify-center'
+          style={{
+            elevation: 2,
+            shadowColor: '#000',
+            shadowOpacity: 0.08,
+            shadowRadius: 4,
+          }}
+          onPress={() => navigation.push('Cart')}
         >
-          <MaterialCommunityIcons name="cart-outline" size={22} color={Colors.textPrimary} />
+          <MaterialCommunityIcons
+            name='cart-outline'
+            size={22}
+            color={Colors.textPrimary}
+          />
         </TouchableOpacity>
       </View>
     </View>

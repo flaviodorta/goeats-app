@@ -25,10 +25,10 @@
 
 - [x] Instalar e configurar **Zustand**
 - [x] Store: `cartStore` — carrinho persistido por restaurante
-- [ ] Refatorar `AppNavigator`: `PublicNavigator` + `PrivateNavigator` + `AuthNavigator`
-- [ ] Conectar Bottom Tabs reais: Explorar, Pedidos, Ofertas, Perfil
-- [ ] Tela `CartScreen` — itens, quantidades, subtotal, taxa, total
-- [ ] Conectar `CartBar` ao `CartScreen`
+- [x] Refatorar `AppNavigator`: `PublicNavigator` + `PrivateNavigator` + `AuthNavigator`
+- [x] Conectar Bottom Tabs reais: Explorar, Pedidos, Ofertas, Perfil
+- [x] Tela `CartScreen` — itens, quantidades, subtotal, taxa, total
+- [x] Conectar `CartBar` ao `CartScreen`
 - [ ] Conectar `SearchBar` à tela `SearchResultsScreen`
 - [ ] Listagem de resultados com estado vazio
 

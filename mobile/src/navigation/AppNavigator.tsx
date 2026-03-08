@@ -1,18 +1,14 @@
 import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import HomeScreen from '../screens/HomeScreen';
-import RestaurantMenuScreen from '../screens/RestaurantMenuScreen';
-import { RootStackParamList } from './types';
-
-const Stack = createNativeStackNavigator<RootStackParamList>();
+import { useAuthStore } from '../stores/authStore';
+import PrivateNavigator from './PrivateNavigator';
+import PublicNavigator from './PublicNavigator';
 
 export default function AppNavigator() {
+  const { isAuthenticated } = useAuthStore();
+
   return (
     <NavigationContainer>
-      <Stack.Navigator screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="Home" component={HomeScreen} />
-        <Stack.Screen name="RestaurantMenu" component={RestaurantMenuScreen} />
-      </Stack.Navigator>
+      {isAuthenticated ? <PrivateNavigator /> : <PublicNavigator />}
     </NavigationContainer>
   );
 }

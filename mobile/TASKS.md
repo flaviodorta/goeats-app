@@ -24,7 +24,7 @@
 ### Mobile
 
 - [x] Instalar e configurar **Zustand**
-- [ ] Store: `cartStore` — carrinho persistido por restaurante
+- [x] Store: `cartStore` — carrinho persistido por restaurante
 - [ ] Refatorar `AppNavigator`: `PublicNavigator` + `PrivateNavigator` + `AuthNavigator`
 - [ ] Conectar Bottom Tabs reais: Explorar, Pedidos, Ofertas, Perfil
 - [ ] Tela `CartScreen` — itens, quantidades, subtotal, taxa, total

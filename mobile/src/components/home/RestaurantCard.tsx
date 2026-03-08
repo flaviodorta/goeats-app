@@ -3,14 +3,14 @@ import { useNavigation } from '@react-navigation/native';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { Colors } from '../../constants/colors';
 import { restaurants } from '../../data/mock';
-import { RootStackNavigation } from '../../navigation/types';
+import { PublicStackNavigation } from '../../navigation/types';
 
 type Props = {
   item: (typeof restaurants)[0];
 };
 
 export default function RestaurantCard({ item }: Props) {
-  const navigation = useNavigation<RootStackNavigation>();
+  const navigation = useNavigation<PublicStackNavigation>();
   return (
     <TouchableOpacity
       onPress={() =>

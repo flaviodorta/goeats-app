@@ -16,7 +16,6 @@ import Header from '../components/home/Header';
 import RestaurantCard from '../components/home/RestaurantCard';
 import SearchBar from '../components/home/SearchBar';
 import SectionHeader from '../components/home/SectionHeader';
-import BottomTabBar from '../components/navigation/BottomTabBar';
 import { Colors } from '../constants/colors';
 import { restaurants } from '../data/mock';
 
@@ -59,10 +58,6 @@ export default function HomeScreen() {
           <RestaurantCard key={item.id} item={item} />
         ))}
       </ScrollView>
-
-      <View style={{ position: 'absolute', bottom: 0, left: 0, right: 0 }}>
-        <BottomTabBar activeTab="explore" />
-      </View>
 
       <AddressSearchModal
         visible={modalVisible}

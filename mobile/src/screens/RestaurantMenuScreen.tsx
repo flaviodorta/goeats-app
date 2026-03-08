@@ -22,6 +22,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import CartBar from '../components/menu/CartBar';
 import MenuTabs from '../components/menu/MenuTabs';
 import { Colors } from '../constants/colors';
+import { useRestaurantMenu } from '../hooks/useRestaurantMenu';
 import { PublicStackParamList } from '../navigation/types';
 import { useCartStore } from '../stores/cartStore';
 
@@ -43,9 +44,11 @@ export default function RestaurantMenuScreen() {
   const [selectedTab, setSelectedTab] = useState('popular');
   const { items, addItem, totalItems, totalPrice } = useCartStore();
 
+  const { menu, loading: loadingMenu, error: menuError, retry: retryMenu } = useRestaurantMenu(restaurant.id);
+
   const filteredMenu = useMemo(
-    () => restaurant.menu.filter((item) => item.tab === selectedTab),
-    [restaurant.menu, selectedTab],
+    () => menu.filter((item) => item.tab === selectedTab),
+    [menu, selectedTab],
   );
 
   if (!fontsLoaded) {
@@ -232,52 +235,65 @@ export default function RestaurantMenuScreen() {
         </View>
 
         <View className='px-5 pt-4 flex-row flex-wrap justify-between'>
-          {filteredMenu.map((item) => {
-            const qty = items[item.id]?.quantity ?? 0;
+          {loadingMenu ? (
+            <ActivityIndicator color={Colors.primary} style={{ marginTop: 32, width: '100%' }} />
+          ) : menuError ? (
+            <View style={{ width: '100%', alignItems: 'center', paddingVertical: 32 }}>
+              <Text style={{ fontFamily: 'Poppins_400Regular', fontSize: 14, color: Colors.textSecondary, marginBottom: 12 }}>
+                {menuError}
+              </Text>
+              <TouchableOpacity onPress={retryMenu} style={{ backgroundColor: Colors.primary, borderRadius: 100, paddingHorizontal: 24, paddingVertical: 10 }}>
+                <Text style={{ fontFamily: 'Poppins_600SemiBold', fontSize: 14, color: '#FFF' }}>Tentar novamente</Text>
+              </TouchableOpacity>
+            </View>
+          ) : (
+            filteredMenu.map((item) => {
+              const qty = items[item.id]?.quantity ?? 0;
 
-            return (
-              <View
-                key={item.id}
-                style={{ width: CARD_WIDTH }}
-                className='rounded-2xl overflow-hidden mb-4 border bg-white'
-              >
-                <Image source={{ uri: item.image }} style={{ width: '100%', height: 106 }} resizeMode='cover' />
-
-                <TouchableOpacity
-                  onPress={() => addItem(restaurant, item)}
-                  className='absolute top-2 right-2 w-7 h-7 rounded-full items-center justify-center'
-                  style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}
-                  activeOpacity={0.85}
+              return (
+                <View
+                  key={item.id}
+                  style={{ width: CARD_WIDTH }}
+                  className='rounded-2xl overflow-hidden mb-4 border bg-white'
                 >
-                  <MaterialCommunityIcons name='plus' size={15} color='#FFF' />
-                </TouchableOpacity>
+                  <Image source={{ uri: item.image }} style={{ width: '100%', height: 106 }} resizeMode='cover' />
 
-                {qty > 0 && (
-                  <View className='absolute top-2 left-2 rounded-full px-2 py-[2px]' style={{ backgroundColor: Colors.primary }}>
-                    <Text style={{ fontFamily: 'Poppins_700Bold', fontSize: 10, color: '#FFF' }}>{qty}</Text>
-                  </View>
-                )}
+                  <TouchableOpacity
+                    onPress={() => addItem(restaurant, item)}
+                    className='absolute top-2 right-2 w-7 h-7 rounded-full items-center justify-center'
+                    style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}
+                    activeOpacity={0.85}
+                  >
+                    <MaterialCommunityIcons name='plus' size={15} color='#FFF' />
+                  </TouchableOpacity>
 
-                <View className='px-3 py-3'>
-                  <Text numberOfLines={1} style={{ fontFamily: 'Poppins_600SemiBold', fontSize: 14, color: Colors.textPrimary }}>
-                    {item.name}
-                  </Text>
+                  {qty > 0 && (
+                    <View className='absolute top-2 left-2 rounded-full px-2 py-[2px]' style={{ backgroundColor: Colors.primary }}>
+                      <Text style={{ fontFamily: 'Poppins_700Bold', fontSize: 10, color: '#FFF' }}>{qty}</Text>
+                    </View>
+                  )}
 
-                  <View className='flex-row items-center justify-between mt-2'>
-                    <View className='flex-row items-center'>
-                      <MaterialCommunityIcons name='star' size={12} color={Colors.warning} />
-                      <Text style={{ fontFamily: 'Poppins_400Regular', fontSize: 11, color: Colors.textSecondary, marginLeft: 3 }}>
-                        {item.rating ?? restaurant.rating}
+                  <View className='px-3 py-3'>
+                    <Text numberOfLines={1} style={{ fontFamily: 'Poppins_600SemiBold', fontSize: 14, color: Colors.textPrimary }}>
+                      {item.name}
+                    </Text>
+
+                    <View className='flex-row items-center justify-between mt-2'>
+                      <View className='flex-row items-center'>
+                        <MaterialCommunityIcons name='star' size={12} color={Colors.warning} />
+                        <Text style={{ fontFamily: 'Poppins_400Regular', fontSize: 11, color: Colors.textSecondary, marginLeft: 3 }}>
+                          {item.rating ?? restaurant.rating}
+                        </Text>
+                      </View>
+                      <Text style={{ fontFamily: 'Poppins_700Bold', fontSize: 18, color: Colors.textPrimary }}>
+                        R$ {item.price.toFixed(2).replace('.', ',')}
                       </Text>
                     </View>
-                    <Text style={{ fontFamily: 'Poppins_700Bold', fontSize: 18, color: Colors.textPrimary }}>
-                      R$ {item.price.toFixed(2).replace('.', ',')}
-                    </Text>
                   </View>
                 </View>
-              </View>
-            );
-          })}
+              );
+            })
+          )}
         </View>
       </ScrollView>
 

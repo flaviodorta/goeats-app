@@ -42,9 +42,9 @@
 
 ### Integração
 
-- [ ] Configurar `axios` no mobile
-- [ ] Substituir `mock.ts` por chamadas reais à API
-- [ ] Tratar estados de loading e erro
+- [x] Configurar `axios` no mobile
+- [x] Substituir `mock.ts` por chamadas reais à API
+- [x] Tratar estados de loading e erro
 
 ---
 
@@ -246,7 +246,7 @@
 
 ### 5.6 Integração com mobile
 
-- [ ] Substituir `mock.ts` por chamadas reais à API
+- [x] Substituir `mock.ts` por chamadas reais à API
 - [ ] Configurar `axios` com interceptor de token JWT
 - [ ] Tratar erros de rede e expiração de sessão
 

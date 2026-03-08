@@ -7,7 +7,7 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import { StatusBar } from 'expo-status-bar';
 import { useState } from 'react';
-import { ActivityIndicator, ScrollView, View } from 'react-native';
+import { ActivityIndicator, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import AddressSearchModal, { Address } from '../components/address/AddressSearchModal';
@@ -17,7 +17,7 @@ import RestaurantCard from '../components/home/RestaurantCard';
 import SearchBar from '../components/home/SearchBar';
 import SectionHeader from '../components/home/SectionHeader';
 import { Colors } from '../constants/colors';
-import { restaurants } from '../data/mock';
+import { useRestaurants } from '../hooks/useRestaurants';
 import { PublicStackNavigation } from '../navigation/types';
 
 export default function HomeScreen() {
@@ -31,6 +31,8 @@ export default function HomeScreen() {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [address, setAddress] = useState<Address | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
+
+  const { restaurants, loading: loadingRestaurants, error, retry } = useRestaurants();
 
   if (!fontsLoaded) {
     return (
@@ -68,9 +70,22 @@ export default function HomeScreen() {
 
         <SectionHeader title='Restaurantes populares' />
 
-        {filtered.map((item) => (
-          <RestaurantCard key={item.id} item={item} />
-        ))}
+        {loadingRestaurants ? (
+          <ActivityIndicator color={Colors.primary} style={{ marginTop: 40 }} />
+        ) : error ? (
+          <View className='items-center mt-10 px-8'>
+            <Text style={{ fontFamily: 'Poppins_400Regular', fontSize: 14, color: Colors.textSecondary, textAlign: 'center', marginBottom: 16 }}>
+              {error}
+            </Text>
+            <TouchableOpacity onPress={retry} style={{ backgroundColor: Colors.primary, borderRadius: 100, paddingHorizontal: 24, paddingVertical: 10 }}>
+              <Text style={{ fontFamily: 'Poppins_600SemiBold', fontSize: 14, color: '#FFF' }}>Tentar novamente</Text>
+            </TouchableOpacity>
+          </View>
+        ) : (
+          filtered.map((item) => (
+            <RestaurantCard key={item.id} item={item} />
+          ))
+        )}
       </ScrollView>
 
       <AddressSearchModal

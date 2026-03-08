@@ -7,12 +7,14 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import RestaurantCard from '../components/home/RestaurantCard';
 import SearchBar from '../components/home/SearchBar';
 import { Colors } from '../constants/colors';
-import { restaurants } from '../data/mock';
+import { useRestaurants } from '../hooks/useRestaurants';
 
 export default function SearchResultsScreen() {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<any>();
   const [query, setQuery] = useState('');
+
+  const { restaurants } = useRestaurants();
 
   const trimmed = query.trim().toLowerCase();
   const results =
@@ -21,8 +23,7 @@ export default function SearchResultsScreen() {
       : restaurants.filter((r) => {
           return (
             r.name.toLowerCase().includes(trimmed) ||
-            r.categories.some((c) => c.toLowerCase().includes(trimmed)) ||
-            r.menu.some((m) => m.name.toLowerCase().includes(trimmed))
+            r.categories.some((c) => c.toLowerCase().includes(trimmed))
           );
         });
 

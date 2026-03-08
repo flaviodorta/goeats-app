@@ -16,6 +16,7 @@ export async function seed(knex: Knex): Promise<void> {
         icon_name: 'pizza',
         icon_color: '#E53935',
         promoted: true,
+        cover_image: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=800&q=80',
       },
       {
         name: 'Sushi Samurai',
@@ -27,6 +28,7 @@ export async function seed(knex: Knex): Promise<void> {
         icon_name: 'fish',
         icon_color: '#1976D2',
         promoted: false,
+        cover_image: 'https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=800&q=80',
       },
       {
         name: 'Burger Bros',
@@ -38,6 +40,7 @@ export async function seed(knex: Knex): Promise<void> {
         icon_name: 'hamburger',
         icon_color: '#FF6F61',
         promoted: false,
+        cover_image: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=800&q=80',
       },
       {
         name: 'Green Bowl',
@@ -49,6 +52,7 @@ export async function seed(knex: Knex): Promise<void> {
         icon_name: 'leaf',
         icon_color: '#4CAF50',
         promoted: false,
+        cover_image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=800&q=80',
       },
     ])
     .returning<{ id: string }[]>('id');
@@ -58,29 +62,32 @@ export async function seed(knex: Knex): Promise<void> {
     {
       restaurant_id: pizza.id,
       name: 'Truffle Mushroom Risotto',
-      description:
-        'Arroz arbóreo cremoso com cogumelos selvagens e óleo de trufa.',
+      description: 'Arroz arbóreo cremoso com cogumelos selvagens e óleo de trufa.',
       price: 12.9,
       tab: 'popular',
       icon_name: 'bowl-mix',
+      image: 'https://images.unsplash.com/photo-1476124369491-e7addf5db371?w=400&q=80',
+      rating: 4.9,
     },
     {
       restaurant_id: pizza.id,
       name: 'Classic Margherita Pizza',
-      description:
-        'Mussarela de búfala fresca, tomates san marzano e manjericão.',
+      description: 'Mussarela de búfala fresca, tomates san marzano e manjericão.',
       price: 14.5,
       tab: 'popular',
       icon_name: 'pizza',
+      image: 'https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=400&q=80',
+      rating: 4.8,
     },
     {
       restaurant_id: pizza.id,
       name: 'Pesto Genovese Pasta',
-      description:
-        'Linguine artesanal com pesto de manjericão e pinhões torrados.',
+      description: 'Linguine artesanal com pesto de manjericão e pinhões torrados.',
       price: 13.2,
       tab: 'popular',
       icon_name: 'noodles',
+      image: 'https://images.unsplash.com/photo-1473093295043-cdd812d0e601?w=400&q=80',
+      rating: 4.7,
     },
     {
       restaurant_id: pizza.id,
@@ -89,6 +96,8 @@ export async function seed(knex: Knex): Promise<void> {
       price: 16.9,
       tab: 'mains',
       icon_name: 'pizza',
+      image: 'https://images.unsplash.com/photo-1628840042765-356cda07504e?w=400&q=80',
+      rating: 4.6,
     },
     {
       restaurant_id: pizza.id,
@@ -97,6 +106,8 @@ export async function seed(knex: Knex): Promise<void> {
       price: 8.5,
       tab: 'desserts',
       icon_name: 'cake',
+      image: 'https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?w=400&q=80',
+      rating: 4.8,
     },
     {
       restaurant_id: pizza.id,
@@ -105,6 +116,8 @@ export async function seed(knex: Knex): Promise<void> {
       price: 6.0,
       tab: 'drinks',
       icon_name: 'cup',
+      image: 'https://images.unsplash.com/photo-1621506289937-a8e4df240d0b?w=400&q=80',
+      rating: 4.5,
     },
     // Sushi Samurai
     {
@@ -114,6 +127,8 @@ export async function seed(knex: Knex): Promise<void> {
       price: 42.9,
       tab: 'popular',
       icon_name: 'fish',
+      image: 'https://images.unsplash.com/photo-1617196034183-421b4040ed20?w=400&q=80',
+      rating: 4.9,
     },
     {
       restaurant_id: sushi.id,
@@ -122,6 +137,8 @@ export async function seed(knex: Knex): Promise<void> {
       price: 29.9,
       tab: 'popular',
       icon_name: 'food',
+      image: 'https://images.unsplash.com/photo-1562802378-063ec186a863?w=400&q=80',
+      rating: 4.7,
     },
     {
       restaurant_id: sushi.id,
@@ -130,6 +147,8 @@ export async function seed(knex: Knex): Promise<void> {
       price: 18.5,
       tab: 'mains',
       icon_name: 'food-variant',
+      image: 'https://images.unsplash.com/photo-1611143669185-af224c5e3252?w=400&q=80',
+      rating: 4.6,
     },
     {
       restaurant_id: sushi.id,
@@ -138,6 +157,8 @@ export async function seed(knex: Knex): Promise<void> {
       price: 7.0,
       tab: 'drinks',
       icon_name: 'bowl-mix',
+      image: 'https://images.unsplash.com/photo-1547592166-23ac45744acd?w=400&q=80',
+      rating: 4.4,
     },
     {
       restaurant_id: sushi.id,
@@ -146,6 +167,8 @@ export async function seed(knex: Knex): Promise<void> {
       price: 9.9,
       tab: 'desserts',
       icon_name: 'cake-variant',
+      image: 'https://images.unsplash.com/photo-1563805042-7684c019e1cb?w=400&q=80',
+      rating: 4.8,
     },
     // Burger Bros
     {
@@ -155,6 +178,8 @@ export async function seed(knex: Knex): Promise<void> {
       price: 22.9,
       tab: 'popular',
       icon_name: 'hamburger',
+      image: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400&q=80',
+      rating: 4.8,
     },
     {
       restaurant_id: burger.id,
@@ -163,6 +188,8 @@ export async function seed(knex: Knex): Promise<void> {
       price: 27.9,
       tab: 'popular',
       icon_name: 'hamburger',
+      image: 'https://images.unsplash.com/photo-1553979459-d2229ba7433b?w=400&q=80',
+      rating: 4.9,
     },
     {
       restaurant_id: burger.id,
@@ -171,6 +198,8 @@ export async function seed(knex: Knex): Promise<void> {
       price: 12.0,
       tab: 'popular',
       icon_name: 'food',
+      image: 'https://images.unsplash.com/photo-1573080496219-bb080dd4f877?w=400&q=80',
+      rating: 4.6,
     },
     {
       restaurant_id: burger.id,
@@ -179,6 +208,8 @@ export async function seed(knex: Knex): Promise<void> {
       price: 19.9,
       tab: 'mains',
       icon_name: 'food-drumstick',
+      image: 'https://images.unsplash.com/photo-1562967914-608f82629710?w=400&q=80',
+      rating: 4.7,
     },
     {
       restaurant_id: burger.id,
@@ -187,6 +218,8 @@ export async function seed(knex: Knex): Promise<void> {
       price: 14.9,
       tab: 'drinks',
       icon_name: 'cup',
+      image: 'https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=400&q=80',
+      rating: 4.7,
     },
     {
       restaurant_id: burger.id,
@@ -195,6 +228,8 @@ export async function seed(knex: Knex): Promise<void> {
       price: 11.9,
       tab: 'desserts',
       icon_name: 'cake',
+      image: 'https://images.unsplash.com/photo-1564355808539-22fda35bed7e?w=400&q=80',
+      rating: 4.8,
     },
     // Green Bowl
     {
@@ -204,6 +239,8 @@ export async function seed(knex: Knex): Promise<void> {
       price: 19.9,
       tab: 'popular',
       icon_name: 'bowl-mix',
+      image: 'https://images.unsplash.com/photo-1590301157890-4810ed352733?w=400&q=80',
+      rating: 4.9,
     },
     {
       restaurant_id: green.id,
@@ -212,6 +249,8 @@ export async function seed(knex: Knex): Promise<void> {
       price: 24.9,
       tab: 'popular',
       icon_name: 'leaf',
+      image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&q=80',
+      rating: 4.8,
     },
     {
       restaurant_id: green.id,
@@ -220,6 +259,8 @@ export async function seed(knex: Knex): Promise<void> {
       price: 18.5,
       tab: 'mains',
       icon_name: 'food-variant',
+      image: 'https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=400&q=80',
+      rating: 4.6,
     },
     {
       restaurant_id: green.id,
@@ -228,6 +269,8 @@ export async function seed(knex: Knex): Promise<void> {
       price: 12.9,
       tab: 'drinks',
       icon_name: 'cup',
+      image: 'https://images.unsplash.com/photo-1610970881699-44a5587cabec?w=400&q=80',
+      rating: 4.7,
     },
     {
       restaurant_id: green.id,
@@ -236,6 +279,8 @@ export async function seed(knex: Knex): Promise<void> {
       price: 9.9,
       tab: 'desserts',
       icon_name: 'cake-variant',
+      image: 'https://images.unsplash.com/photo-1587314168485-3236d6710814?w=400&q=80',
+      rating: 4.5,
     },
   ]);
 }

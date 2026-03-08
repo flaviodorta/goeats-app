@@ -13,6 +13,7 @@ export interface RestaurantRow {
   icon_name: string;
   icon_color: string;
   promoted: boolean;
+  cover_image: string;
   created_at: Date;
   updated_at: Date;
 }
@@ -25,6 +26,8 @@ export interface MenuItemRow {
   price: number;
   tab: 'popular' | 'mains' | 'drinks' | 'desserts';
   icon_name: string;
+  image: string;
+  rating: number | null;
   created_at: Date;
   updated_at: Date;
 }

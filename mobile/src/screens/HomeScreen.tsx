@@ -6,6 +6,7 @@ import {
 } from '@expo-google-fonts/poppins';
 import { StatusBar } from 'expo-status-bar';
 import { useState } from 'react';
+import { useNavigation } from '@react-navigation/native';
 import { ActivityIndicator, ScrollView, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -18,9 +19,11 @@ import SearchBar from '../components/home/SearchBar';
 import SectionHeader from '../components/home/SectionHeader';
 import { Colors } from '../constants/colors';
 import { restaurants } from '../data/mock';
+import { PublicStackNavigation } from '../navigation/types';
 
 export default function HomeScreen() {
   const insets = useSafeAreaInsets();
+  const navigation = useNavigation<PublicStackNavigation>();
   const [fontsLoaded] = useFonts({ Poppins_400Regular, Poppins_600SemiBold, Poppins_700Bold });
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [address, setAddress] = useState<Address | null>(null);
@@ -47,7 +50,7 @@ export default function HomeScreen() {
 
       <View style={{ paddingTop: insets.top }}>
         <Header address={address} onAddressPress={() => setModalVisible(true)} />
-        <SearchBar />
+        <SearchBar onPress={() => navigation.navigate('SearchResults')} />
         <CategoryFilter selected={selectedCategory} onSelect={setSelectedCategory} />
       </View>
 

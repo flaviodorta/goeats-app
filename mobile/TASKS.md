@@ -29,7 +29,7 @@
 - [x] Conectar Bottom Tabs reais: Explorar, Pedidos, Ofertas, Perfil
 - [x] Tela `CartScreen` — itens, quantidades, subtotal, taxa, total
 - [x] Conectar `CartBar` ao `CartScreen`
-- [ ] Conectar `SearchBar` à tela `SearchResultsScreen`
+- [x] Conectar `SearchBar` à tela `SearchResultsScreen`
 - [ ] Listagem de resultados com estado vazio
 
 ### API

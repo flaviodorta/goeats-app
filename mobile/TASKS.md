@@ -1,187 +1,204 @@
-# GoEats Mobile — Tasks
+# GoEats — Tasks
 
 ## Estado atual
 
-| Tela / Funcionalidade | Status |
-|---|---|
-| Splash Screen | Feito |
-| Onboarding Screen | Feito |
-| Home Screen (listagem de restaurantes) | Feito |
-| Filtro de categorias | Feito |
-| Banner carousel | Feito |
-| Address Search Modal | Feito |
-| Restaurant Menu Screen | Feito |
-| Cart (add/remove itens, total) | Feito — sem persistência |
-| Bottom Tab Bar (UI) | Feito — sem navegação real |
-| Navegação Stack: Home → Menu | Feito |
-
-**Pendente:** tudo abaixo. As tabs de Pedidos, Ofertas e Perfil não estão conectadas a nenhuma tela.
+| Tela / Funcionalidade                  | Status                     |
+| -------------------------------------- | -------------------------- |
+| Splash Screen                          | Feito                      |
+| Onboarding Screen                      | Feito                      |
+| Home Screen (listagem de restaurantes) | Feito                      |
+| Filtro de categorias                   | Feito                      |
+| Banner carousel                        | Feito                      |
+| Address Search Modal                   | Feito                      |
+| Restaurant Menu Screen                 | Feito                      |
+| Cart (add/remove itens, total)         | Feito — sem persistência   |
+| Bottom Tab Bar (UI)                    | Feito — sem navegação real |
+| Navegação Stack: Home → Menu           | Feito                      |
 
 ---
 
-## 1. Infraestrutura
+## Etapa 1 — Exploração sem login (front + back)
 
-### 1.1 Gerenciamento de estado global
-- [ ] Instalar e configurar **Zustand** (ou Context API)
+> Usuário navega, vê restaurantes e monta o carrinho sem precisar de conta.
+
+### Mobile
+
+- [x] Instalar e configurar **Zustand**
 - [ ] Store: `cartStore` — carrinho persistido por restaurante
-- [ ] Store: `authStore` — usuário logado, token, perfil
-- [ ] Store: `orderStore` — pedido ativo e histórico
+- [ ] Refatorar `AppNavigator`: `PublicNavigator` + `PrivateNavigator` + `AuthNavigator`
+- [ ] Conectar Bottom Tabs reais: Explorar, Pedidos, Ofertas, Perfil
+- [ ] Tela `CartScreen` — itens, quantidades, subtotal, taxa, total
+- [ ] Conectar `CartBar` ao `CartScreen`
+- [ ] Conectar `SearchBar` à tela `SearchResultsScreen`
+- [ ] Listagem de resultados com estado vazio
 
-### 1.2 Navegação
-- [ ] Refatorar `AppNavigator` para suportar **Tab Navigator** (Bottom Tabs reais)
-- [ ] Conectar tabs: Explorar, Pedidos, Ofertas, Perfil
-- [ ] Criar `AuthNavigator` — fluxo de login/cadastro separado do app principal
-- [ ] Adicionar rotas faltantes ao `RootStackParamList`:
-  - `Cart`, `Checkout`, `OrderConfirmation`, `OrderTracking`
-  - `Profile`, `EditProfile`, `Addresses`, `PaymentMethods`
-  - `OrdersList`, `OrderDetail`
-  - `SearchResults`, `Offers`
+### API
 
-### 1.3 Autenticação
+- [ ] Criar projeto Node.js + Express + TypeScript em `api/`
+- [ ] Configurar Knex + PostgreSQL + migrations + seeds
+- [ ] `GET /restaurants` — listar com filtro por categoria
+- [ ] `GET /restaurants/:id` — detalhes
+- [ ] `GET /restaurants/:id/menu` — cardápio completo
+
+### Integração
+
+- [ ] Configurar `axios` no mobile
+- [ ] Substituir `mock.ts` por chamadas reais à API
+- [ ] Tratar estados de loading e erro
+
+---
+
+## Etapa 2 — Checkout e autenticação (front + back)
+
+> Usuário vai finalizar o pedido, é redirecionado para login/cadastro e volta para o checkout.
+
+### Mobile
+
+- [ ] Store: `authStore` — token JWT, dados do usuário
+- [ ] Ao ir para checkout sem login: redirecionar para `AuthNavigator`
 - [ ] Tela de Login (email + senha)
 - [ ] Tela de Cadastro (nome, email, senha, telefone)
-- [ ] Tela de recuperação de senha
+- [ ] Após login: retornar automaticamente para o checkout
 - [ ] Persistir sessão com AsyncStorage
-- [ ] Verificar sessão no boot (App.tsx — estado `auth` além de `onboarding`)
+- [ ] Tela `CheckoutScreen` — resumo, endereço, forma de pagamento
+- [ ] Seleção de endereço salvo ou novo
+- [ ] Tela `PaymentScreen` — cartão, Pix, dinheiro
+- [ ] Cupom de desconto (campo + validação)
+- [ ] Tela `OrderConfirmationScreen` — animação de sucesso, número do pedido, ETA
 
-### 1.4 Dados / API
-- [ ] Substituir `mock.ts` por chamadas reais à API
-- [ ] Criar camada de serviços: `services/restaurantService.ts`, `services/orderService.ts`, etc.
-- [ ] Tratar estados de loading e erro nas listagens
+### API
+
+- [ ] `POST /auth/register` — cadastro
+- [ ] `POST /auth/login` — retorna JWT
+- [ ] `POST /auth/refresh` — renovar token
+- [ ] Middleware de autenticação JWT
+- [ ] Hash de senha com `bcrypt`
+- [ ] `POST /orders` — criar pedido (rota privada)
+- [ ] `GET /users/me/addresses` — listar endereços
+- [ ] `POST /users/me/addresses` — adicionar endereço
+- [ ] `DELETE /users/me/addresses/:id` — remover endereço
+
+### Integração
+
+- [ ] Interceptor axios — anexar JWT em todas as requisições privadas
+- [ ] Tratar expiração de sessão (401 → redirecionar para login)
 
 ---
 
-## 2. App do Cliente
+## Etapa 3 — Rastreamento de entrega (front + back)
 
-### 2.1 Busca
-- [ ] Conectar `SearchBar` à tela `SearchResultsScreen`
-- [ ] Listagem de resultados com filtro por nome e categoria
-- [ ] Estado vazio (nenhum resultado encontrado)
+> Pedido foi feito, usuário acompanha em tempo real.
 
-### 2.2 Carrinho
-- [ ] Tela `CartScreen` — lista de itens, quantidades, subtotal, taxa de entrega, total
-- [ ] Remover/ajustar quantidade de itens dentro do carrinho
-- [ ] Conectar `CartBar` (no menu) ao `CartScreen`
-- [ ] Observação/instrução para o restaurante (campo de texto)
+### Mobile
 
-### 2.3 Checkout e Pagamento
-- [ ] Tela `CheckoutScreen` — resumo do pedido, endereço de entrega, forma de pagamento
-- [ ] Seleção de endereço salvo ou novo
-- [ ] Tela `PaymentScreen` — cartão de crédito, Pix, dinheiro
-- [ ] Cupom de desconto (campo + validação)
-- [ ] Confirmação antes de finalizar
-
-### 2.4 Confirmação de pedido
-- [ ] Tela `OrderConfirmationScreen` — animação de sucesso, número do pedido, ETA inicial
-
-### 2.5 Rastreamento de entrega
+- [ ] Store: `orderStore` — pedido ativo e histórico
 - [ ] Tela `OrderTrackingScreen` com mapa (react-native-maps)
-- [ ] Linha do tempo do pedido: Confirmado → Em preparo → Saiu para entrega → Entregue
+- [ ] Linha do tempo: Confirmado → Em preparo → Saiu para entrega → Entregue
 - [ ] Posição do entregador em tempo real no mapa
-- [ ] ETA dinâmico (atualiza conforme entregador se move)
+- [ ] ETA dinâmico
 - [ ] Botão para contatar o entregador
 
-### 2.6 Histórico de pedidos
-- [ ] Tela `OrdersListScreen` — lista de pedidos passados e pedido ativo
-- [ ] Tela `OrderDetailScreen` — detalhes de um pedido específico
+### API
+
+- [ ] `GET /orders/:id` — detalhes e status atual do pedido
+- [ ] WebSocket — emitir atualização de status do pedido em tempo real
+- [ ] WebSocket — emitir posição do entregador em tempo real
+- [ ] Integração com Google Maps Distance Matrix API para ETA
+
+---
+
+## Etapa 4 — Histórico, perfil e ofertas (front + back)
+
+### Mobile
+
+- [ ] Tela `OrdersListScreen` — pedidos passados e ativo
+- [ ] Tela `OrderDetailScreen` — detalhes de um pedido
 - [ ] Ação de repetir pedido
-- [ ] Status visual por estado do pedido
-
-### 2.7 Avaliação
-- [ ] Modal de avaliação após entrega (estrelas + comentário)
-- [ ] Avaliação do restaurante e do entregador separadas
-
-### 2.8 Ofertas
-- [ ] Tela `OffersScreen` — cupons disponíveis, promoções ativas
-- [ ] Card de oferta com validade e código
-- [ ] Aplicar cupom direto pelo card
-
-### 2.9 Perfil do usuário
+- [ ] Modal de avaliação após entrega (restaurante + entregador)
 - [ ] Tela `ProfileScreen` — foto, nome, email, telefone
-- [ ] Tela `EditProfileScreen` — editar dados pessoais
-- [ ] Tela `AddressesScreen` — lista de endereços salvos (casa, trabalho, outros)
-- [ ] Adicionar/editar/remover endereço com mapa
+- [ ] Tela `EditProfileScreen`
 - [ ] Tela `PaymentMethodsScreen` — cartões salvos, Pix
-- [ ] Adicionar/remover cartão
-- [ ] Notificações — toggle de preferências
-- [ ] Botão de logout
+- [ ] Favoritos — salvar restaurante, seção no perfil
+- [ ] Tela `OffersScreen` — cupons, promoções
+- [ ] Tela de recuperação de senha
 
-### 2.10 Favoritos
-- [ ] Salvar restaurante como favorito (coração no card e na tela do menu)
-- [ ] Tela ou seção de favoritos no perfil
+### API
+
+- [ ] `GET /orders` — listar pedidos do usuário
+- [ ] `POST /orders/:id/reorder` — repetir pedido
+- [ ] `PATCH /orders/:id/cancel` — cancelar pedido
+- [ ] `POST /orders/:id/review` — avaliar pedido
+- [ ] `GET /users/me` — perfil
+- [ ] `PATCH /users/me` — atualizar perfil
+- [ ] `GET /users/me/favorites` — restaurantes favoritos
+- [ ] `POST /users/me/favorites/:restaurantId`
+- [ ] `DELETE /users/me/favorites/:restaurantId`
+- [ ] `GET /offers` — cupons e promoções disponíveis
 
 ---
 
-## 3. App da Loja (Portal do Restaurante)
+## Etapa 5 — App da Loja (front + back)
 
-> Pode ser um app separado ou um modo alternativo acessado por login de lojista.
+> Portal do restaurante para gerenciar pedidos e cardápio.
 
-### 3.1 Autenticação da loja
+### Mobile (app separado ou modo lojista)
+
 - [ ] Login com credenciais de lojista
-- [ ] Tela de seleção de estabelecimento (para quem tem mais de uma unidade)
-
-### 3.2 Dashboard
-- [ ] Resumo do dia: pedidos recebidos, faturamento, avaliação média
-- [ ] Indicador de loja aberta/fechada com toggle rápido
-
-### 3.3 Gestão de pedidos
-- [ ] Tela de pedidos em tempo real (novos pedidos com notificação sonora)
-- [ ] Ação: aceitar ou rejeitar pedido com motivo
+- [ ] Dashboard — pedidos do dia, faturamento, avaliação média
+- [ ] Toggle aberto/fechado
+- [ ] Tela de pedidos em tempo real (notificação sonora)
+- [ ] Aceitar ou rejeitar pedido com motivo
 - [ ] Atualizar status: Em preparo → Pronto para retirada
-- [ ] Tempo estimado de preparo — editar por pedido
+- [ ] Editar tempo estimado de preparo por pedido
+- [ ] Listagem e gerenciamento do cardápio
+- [ ] Adicionar / editar / remover item
+- [ ] Ativar/desativar item (esgotado)
+- [ ] Configurações: horários, raio de entrega, taxa, tempo padrão de preparo
+- [ ] Histórico de pedidos + relatório simples
+- [ ] Avaliações recebidas
 
-### 3.4 Cardápio
-- [ ] Listagem de itens do cardápio
-- [ ] Adicionar / editar / remover item (nome, descrição, preço, foto, categoria)
-- [ ] Ativar/desativar item sem removê-lo (ex: item esgotado)
-- [ ] Gerenciar categorias do cardápio
+### API
 
-### 3.5 Configurações da loja
-- [ ] Editar dados do restaurante (nome, endereço, telefone, foto de capa)
-- [ ] Horários de funcionamento por dia da semana
-- [ ] Raio de entrega e taxa de entrega
-- [ ] Tempo padrão de preparo
-
-### 3.6 Histórico e relatórios
-- [ ] Histórico de pedidos com filtro por período
-- [ ] Relatório simples: pedidos por dia, ticket médio
-- [ ] Avaliações recebidas dos clientes
+- [ ] `POST /auth/restaurant/login`
+- [ ] `GET /restaurant/orders` — pedidos em tempo real (WebSocket)
+- [ ] `PATCH /restaurant/orders/:id/accept`
+- [ ] `PATCH /restaurant/orders/:id/reject`
+- [ ] `PATCH /restaurant/orders/:id/status`
+- [ ] CRUD de itens do cardápio
+- [ ] `PATCH /restaurant/settings` — configurações da loja
 
 ---
 
-## 4. App do Entregador
+## Etapa 6 — App do Entregador (front + back)
 
-> App separado ou modo alternativo acessado por login de entregador.
+> App do entregador para receber e executar corridas.
 
-### 4.1 Autenticação do entregador
+### Mobile (app separado ou modo entregador)
+
 - [ ] Login com CPF e senha
-- [ ] Tela de cadastro com dados pessoais, veículo e documentos
-
-### 4.2 Disponibilidade
-- [ ] Toggle "Estou disponível" na tela principal
-- [ ] Indicador de status visível (online/offline)
-
-### 4.3 Recebimento de corridas
-- [ ] Tela de corrida disponível — notificação com restaurante, distância, valor estimado
-- [ ] Aceitar ou recusar corrida dentro de um timer
-- [ ] Ao aceitar: mapa com rota até o restaurante
-
-### 4.4 Execução da entrega
-- [ ] Tela de entrega ativa com mapa e rota em tempo real
+- [ ] Cadastro com dados pessoais, veículo e documentos
+- [ ] Toggle disponível/indisponível
+- [ ] Tela de corrida disponível — restaurante, distância, valor, timer para aceitar
+- [ ] Aceitar ou recusar corrida
+- [ ] Mapa com rota até o restaurante
+- [ ] Tela de entrega ativa — mapa, rota em tempo real
 - [ ] Confirmar retirada no restaurante
-- [ ] Confirmar entrega ao cliente (com código ou foto)
-- [ ] Contato com o cliente (telefone)
-- [ ] Navegar com app externo (Google Maps / Waze)
-
-### 4.5 Histórico e ganhos
-- [ ] Tela de histórico de entregas
+- [ ] Confirmar entrega (código ou foto)
+- [ ] Contato com o cliente
+- [ ] Navegar com Google Maps / Waze
+- [ ] Histórico de entregas
 - [ ] Tela de ganhos: diário, semanal, mensal
-- [ ] Extrato por entrega (valor, gorjeta, distância)
+- [ ] Perfil — dados pessoais, veículo, avaliações, documentos
 
-### 4.6 Perfil do entregador
-- [ ] Editar dados pessoais e veículo
-- [ ] Avaliações recebidas
-- [ ] Documentos enviados e status de aprovação
+### API
+
+- [ ] `POST /auth/driver/login` e `/register`
+- [ ] `PATCH /drivers/me/availability` — online/offline
+- [ ] WebSocket — receber corrida disponível
+- [ ] `POST /deliveries/:id/accept`
+- [ ] `POST /deliveries/:id/pickup` — confirmar retirada
+- [ ] `POST /deliveries/:id/complete` — confirmar entrega
+- [ ] `GET /drivers/me/earnings` — ganhos por período
 
 ---
 
@@ -190,6 +207,7 @@
 > Objetivo: ter uma API funcionando conectada ao mobile. Sem DDD, sem complexidade. Foco em entregar produto.
 
 ### 5.1 Setup inicial
+
 - [ ] Criar projeto Node.js com Express + TypeScript em `api/`
 - [ ] Configurar `tsconfig.json`, `eslint`, `prettier`
 - [ ] Configurar banco PostgreSQL com Knex
@@ -198,6 +216,7 @@
 - [ ] Criar script de migrations e seeds iniciais
 
 ### 5.2 Autenticação
+
 - [ ] `POST /auth/register` — cadastro de usuário
 - [ ] `POST /auth/login` — login, retorna JWT
 - [ ] `POST /auth/refresh` — renovar token
@@ -205,17 +224,20 @@
 - [ ] Hash de senha com `bcrypt`
 
 ### 5.3 Restaurantes
+
 - [ ] `GET /restaurants` — listar com filtro por categoria e endereço
 - [ ] `GET /restaurants/:id` — detalhes do restaurante
 - [ ] `GET /restaurants/:id/menu` — cardápio completo
 
 ### 5.4 Pedidos
+
 - [ ] `POST /orders` — criar pedido
 - [ ] `GET /orders` — listar pedidos do usuário autenticado
 - [ ] `GET /orders/:id` — detalhes do pedido
 - [ ] `PATCH /orders/:id/cancel` — cancelar pedido
 
 ### 5.5 Perfil do usuário
+
 - [ ] `GET /users/me` — dados do usuário autenticado
 - [ ] `PATCH /users/me` — atualizar perfil
 - [ ] `GET /users/me/addresses` — listar endereços
@@ -223,6 +245,7 @@
 - [ ] `DELETE /users/me/addresses/:id` — remover endereço
 
 ### 5.6 Integração com mobile
+
 - [ ] Substituir `mock.ts` por chamadas reais à API
 - [ ] Configurar `axios` com interceptor de token JWT
 - [ ] Tratar erros de rede e expiração de sessão
@@ -234,6 +257,7 @@
 > Objetivo: refatorar o monólito simples para estrutura modular com DDD. Preparar para extração futura em microsserviços.
 
 ### 6.1 Reestruturação de pastas
+
 - [ ] Reorganizar código em módulos: `auth`, `ordering`, `restaurant`, `delivery`, `payments`
 - [ ] Cada módulo com camadas: `domain/`, `application/`, `infra/`
 - [ ] Criar schemas separados no banco por módulo (`auth.*`, `ordering.*`, etc.)
@@ -241,6 +265,7 @@
 - [ ] Cada módulo com suas próprias migrations e seeds
 
 ### 6.2 Domínio — entities e regras de negócio
+
 - [ ] `Order` entity — com regras: cancelamento, status, itens, desconto
 - [ ] `Restaurant` entity — com regras: aberto/fechado, cardápio, raio de entrega
 - [ ] `User` entity — com regras: endereços, métodos de pagamento
@@ -249,6 +274,7 @@
 - [ ] Value objects: `Money`, `Address`, `OrderStatus`, `DeliveryStatus`
 
 ### 6.3 Casos de uso
+
 - [ ] `PlaceOrderUseCase` — valida restaurante aberto, cria pedido, aplica cupom
 - [ ] `CancelOrderUseCase` — valida regras de cancelamento
 - [ ] `ConfirmOrderUseCase` — restaurante confirma pedido
@@ -256,16 +282,19 @@
 - [ ] `ConfirmDeliveryUseCase` — entregador confirma entrega
 
 ### 6.4 Repositórios
+
 - [ ] Interface do repositório no domínio (sem Knex)
 - [ ] Implementação com Knex no infra de cada módulo
 - [ ] Mapeamento manual entre row do banco e entity do domínio
 
 ### 6.5 Comunicação entre módulos
+
 - [ ] Definir eventos de domínio: `OrderPlaced`, `OrderConfirmed`, `DeliveryCompleted`, `PaymentApproved`
 - [ ] Implementar event bus in-memory para comunicação entre módulos
 - [ ] Módulos reagem a eventos sem chamar uns aos outros diretamente
 
 ### 6.6 Testes
+
 - [ ] Testes unitários das entities (sem banco, sem HTTP)
 - [ ] Testes dos casos de uso com repositórios em memória
 - [ ] Testes de integração dos endpoints principais
@@ -277,11 +306,13 @@
 > Objetivo: trocar event bus in-memory por Kafka. Adicionar outbox pattern e idempotência.
 
 ### 7.1 Infraestrutura
+
 - [ ] Subir Kafka com Docker Compose
 - [ ] Configurar `kafkajs` no projeto
 - [ ] Criar tópicos por evento de domínio
 
 ### 7.2 Outbox Pattern
+
 - [ ] Criar tabela `outbox` em cada módulo produtor
 - [ ] Salvar evento no outbox na mesma transação do dado
 - [ ] Implementar relay por módulo — lê outbox e publica no Kafka
@@ -289,12 +320,14 @@
 - [ ] Configurar producer com `idempotent: true` e `acks=all`
 
 ### 7.3 Idempotência nos consumidores
+
 - [ ] Criar tabela `processed_events` em cada módulo consumidor
 - [ ] Unique constraint em `event_id`
 - [ ] Verificar duplicata antes de processar
 - [ ] Commitar offset do Kafka só após transação finalizar
 
 ### 7.4 Observabilidade
+
 - [ ] Logs estruturados com `pino`
 - [ ] Rastrear eventos perdidos ou não processados
 - [ ] Health check dos consumers e relay
@@ -306,6 +339,7 @@
 > Objetivo: extrair módulos como serviços independentes. Um de cada vez, sem parar o monólito.
 
 ### 8.1 Estratégia de extração (Strangler Fig)
+
 - [ ] Definir ordem de extração: `payments` → `delivery` → `ordering` → `restaurant` → `auth`
 - [ ] Cada extração segue o mesmo processo:
   - mover pasta do módulo para repositório próprio
@@ -314,23 +348,27 @@
   - ajustar rotas no API Gateway
 
 ### 8.2 API Gateway
+
 - [ ] Configurar API Gateway (nginx ou serviço dedicado)
 - [ ] Rotear requisições para o serviço correto por prefixo de rota
 - [ ] Centralizar autenticação JWT no gateway
 
 ### 8.3 Payments Service
+
 - [ ] Extrair módulo `payments` como serviço independente
 - [ ] Banco próprio: `payments_db`
 - [ ] Comunicação com outros serviços exclusivamente via Kafka
 - [ ] Cópia local de dados necessários de outros domínios (user snapshot)
 
 ### 8.4 Delivery Service
+
 - [ ] Extrair módulo `delivery` como serviço independente
 - [ ] Banco próprio: `delivery_db`
 - [ ] WebSocket para posição em tempo real do entregador
 - [ ] Integração com Google Maps Distance Matrix API para ETA
 
 ### 8.5 Demais serviços
+
 - [ ] Extrair `ordering`, `restaurant`, `auth` seguindo o mesmo padrão
 - [ ] Cada serviço com seu próprio relay e consumers Kafka
 - [ ] Docker Compose com todos os serviços orquestrados

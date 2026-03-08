@@ -1,5 +1,6 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { FlatList, Text, TouchableOpacity } from 'react-native';
+import { FlatList, Text, TouchableOpacity, View } from 'react-native';
+
 import { Colors } from '../../constants/colors';
 import { categories } from '../../data/mock';
 
@@ -15,33 +16,31 @@ export default function CategoryFilter({ selected, onSelect }: Props) {
       keyExtractor={(item) => item.id}
       horizontal
       showsHorizontalScrollIndicator={false}
-      contentContainerStyle={{ paddingHorizontal: 20, gap: 8 }}
+      contentContainerStyle={{ paddingHorizontal: 20, gap: 14, paddingVertical: 6 }}
       renderItem={({ item }) => {
-        const is_active = item.id === selected;
+        const isActive = item.id === selected;
         return (
-          <TouchableOpacity
-            onPress={() => onSelect(item.id)}
-            activeOpacity={0.75}
-            className="flex-row items-center rounded-2xl px-4 h-10"
-            style={{
-              backgroundColor: is_active ? Colors.primary : Colors.surface,
-              elevation: is_active ? 0 : 2,
-              shadowColor: '#000',
-              shadowOpacity: is_active ? 0 : 0.07,
-              shadowRadius: 4,
-            }}
-          >
-            <MaterialCommunityIcons
-              name={item.icon as any}
-              size={16}
-              color={is_active ? '#FFF' : Colors.textSecondary}
-            />
-            <Text
+          <TouchableOpacity onPress={() => onSelect(item.id)} className='items-center w-[72px]' activeOpacity={0.85}>
+            <View
+              className='w-14 h-14 rounded-full items-center justify-center border'
               style={{
-                fontFamily: 'Poppins_600SemiBold',
-                fontSize: 13,
-                color: is_active ? '#FFF' : Colors.textSecondary,
-                marginLeft: 6,
+                borderColor: isActive ? Colors.primary : Colors.border,
+                backgroundColor: isActive ? '#FFE8DA' : '#FFF',
+              }}
+            >
+              <MaterialCommunityIcons
+                name={item.icon as any}
+                size={24}
+                color={isActive ? Colors.primary : Colors.textSecondary}
+              />
+            </View>
+            <Text
+              numberOfLines={1}
+              className='mt-2 text-center'
+              style={{
+                fontFamily: isActive ? 'Poppins_600SemiBold' : 'Poppins_400Regular',
+                fontSize: 12,
+                color: isActive ? Colors.textPrimary : Colors.textSecondary,
               }}
             >
               {item.name}

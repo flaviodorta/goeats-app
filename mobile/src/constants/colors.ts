@@ -1,27 +1,32 @@
-// constants/colors.ts — GoEats Brand Palette
+// constants/colors.ts
 
 export const Colors = {
-  // Principais
-  primary: '#E53935',       // Vermelho vibrante — botões, CTAs
-  primaryDark: '#B71C1C',   // Headers, estados pressed
-  accent: '#FF6F61',        // Destaques, badges, promoções
-  primaryLight: '#FF8A80',  // Backgrounds sutis, hover states
+  // Core palette
+  primary: '#DA4E1C',
+  primaryDark: '#1C1410',
+  accent: '#F6B24A',
+  primaryLight: '#F4793D',
 
-  // Neutras
-  background: '#FFF5F5',    // Fundo geral (tom quente, acolhedor)
-  textPrimary: '#212121',   // Texto principal
-  textSecondary: '#757575', // Texto secundário
-  surface: '#FFFFFF',       // Cards e superfícies
+  // Neutrals
+  background: '#F5F1EB',
+  textPrimary: '#1A1512',
+  textSecondary: '#7D7269',
+  surface: '#FFFFFF',
 
-  // Semânticas
-  success: '#4CAF50',       // Pedido confirmado, entregue
-  warning: '#FFA726',       // Atrasos, alertas
-  error: '#D32F2F',         // Erros, cancelamentos
-  info: '#1976D2',          // Informações, "a caminho"
+  // Semantic
+  success: '#2F9A61',
+  warning: '#EEA83B',
+  error: '#C43A2D',
+  info: '#2E6BD4',
 
-  // Auxiliares
-  border: '#E0E0E0',
-  disabled: '#BDBDBD',
-  overlay: 'rgba(0,0,0,0.5)',
-  skeleton: '#F0F0F0',
+  // Utility
+  border: '#ECE3D9',
+  disabled: '#B9AEA4',
+  overlay: 'rgba(11, 9, 8, 0.56)',
+  skeleton: '#EFE8DE',
+
+  // Layout helpers
+  chip: '#F3ECE3',
+  hero: '#211B16',
+  cream: '#FFF3E6',
 };

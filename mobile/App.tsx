@@ -24,7 +24,9 @@ export default function App() {
   return (
     <SafeAreaProvider>
       {appState === 'loading' && <SplashScreen />}
-      {appState === 'onboarding' && <OnboardingScreen onDone={() => setAppState('home')} />}
+      {appState === 'onboarding' && (
+        <OnboardingScreen onDone={() => setAppState('home')} />
+      )}
       {appState === 'home' && <AppNavigator />}
     </SafeAreaProvider>
   );

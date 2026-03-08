@@ -1,100 +1,101 @@
-import { MaterialCommunityIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
-  useFonts,
   Poppins_300Light,
   Poppins_600SemiBold,
   Poppins_700Bold,
+  useFonts,
 } from '@expo-google-fonts/poppins';
+import { StatusBar } from 'expo-status-bar';
 import { useRef, useState } from 'react';
 import {
+  ActivityIndicator,
   Dimensions,
   FlatList,
-  TouchableOpacity,
+  Image,
   Text,
+  TouchableOpacity,
   View,
-  ActivityIndicator,
   ViewToken,
 } from 'react-native';
-import { StatusBar } from 'expo-status-bar';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+import { Colors } from '../constants/colors';
 
 const { width } = Dimensions.get('window');
 
-const slides = [
+type Slide = {
+  id: string;
+  title: string;
+  subtitle: string;
+  image: string;
+};
+
+const slides: Slide[] = [
   {
     id: '1',
-    icon: 'moped' as const,
-    title: 'GoEats',
-    subtitle: 'Descubra restaurantes\nperto de você',
+    title: 'Entre no\nmundo do sabor',
+    subtitle: 'Descubra restaurantes incríveis perto de você.',
+    image:
+      'https://images.unsplash.com/photo-1571091718767-18b5b1457add?auto=format&fit=crop&w=900&q=80',
   },
   {
     id: '2',
-    icon: 'food' as const,
-    title: 'Peça com\nfacilidade',
-    subtitle: 'Monte seu pedido e\npersonalize do seu jeito',
+    title: 'Escolha seu\npedido ideal',
+    subtitle: 'Monte seu pedido e acompanhe cada detalhe.',
+    image:
+      'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=900&q=80',
   },
   {
     id: '3',
-    icon: 'clock-fast' as const,
-    title: 'Receba em\nminutos',
-    subtitle: 'Acompanhe sua entrega\nem tempo real',
+    title: 'Receba rápido\nonde estiver',
+    subtitle: 'Entrega ágil com os melhores preços da região.',
+    image:
+      'https://images.unsplash.com/photo-1606755962773-d324e0a13086?auto=format&fit=crop&w=900&q=80',
   },
 ];
-
-function Slide({ item }: { item: (typeof slides)[0] }) {
-  return (
-    <View style={{ width }} className='flex-1 items-center justify-center px-8'>
-      <View className='w-28 h-28 rounded-full bg-white items-center justify-center mb-8'>
-        <MaterialCommunityIcons name={item.icon} size={52} color='#E53935' />
-      </View>
-
-      <Text
-        className='text-white text-4xl text-center mb-3'
-        style={{ fontFamily: 'Poppins_700Bold' }}
-      >
-        {item.title}
-      </Text>
-
-      <Text
-        className='text-white/80 text-base text-center leading-6'
-        style={{ fontFamily: 'Poppins_300Light' }}
-      >
-        {item.subtitle}
-      </Text>
-    </View>
-  );
-}
-
-function Dots({ activeIndex }: { activeIndex: number }) {
-  return (
-    <View className='flex-row items-center justify-center'>
-      {slides.map((_, index) => (
-        <View
-          key={index}
-          className={[
-            'h-2 rounded-full mx-1',
-            index === activeIndex ? 'w-4 bg-white' : 'w-2 bg-white/40',
-          ].join(' ')}
-        />
-      ))}
-    </View>
-  );
-}
 
 type Props = {
   onDone: () => void;
 };
 
 export default function OnboardingScreen({ onDone }: Props) {
+  const insets = useSafeAreaInsets();
   const [fontsLoaded] = useFonts({
     Poppins_300Light,
     Poppins_600SemiBold,
     Poppins_700Bold,
   });
-
   const [activeIndex, setActiveIndex] = useState(0);
 
-  const flat_list_ref = useRef<FlatList>(null);
+  const listRef = useRef<FlatList<Slide>>(null);
+
+  const onViewableItemsChanged = useRef(
+    ({ viewableItems }: { viewableItems: ViewToken[] }) => {
+      const visible = viewableItems[0]?.index;
+      if (visible != null) {
+        setActiveIndex(visible);
+      }
+    },
+  );
+
+  const viewabilityConfig = useRef({ viewAreaCoveragePercentThreshold: 60 });
+
+  const finish = async () => {
+    await AsyncStorage.setItem('hasSeenOnboarding', 'true');
+    onDone();
+  };
+
+  const handlePrimaryAction = async () => {
+    if (activeIndex === slides.length - 1) {
+      await finish();
+      return;
+    }
+
+    listRef.current?.scrollToIndex({
+      index: activeIndex + 1,
+      animated: true,
+    });
+  };
 
   if (!fontsLoaded) {
     return (
@@ -104,90 +105,138 @@ export default function OnboardingScreen({ onDone }: Props) {
     );
   }
 
-  const on_viewable_items_changed = ({
-    viewableItems,
-  }: {
-    viewableItems: ViewToken[];
-  }) => {
-    if (viewableItems.length > 0) {
-      setActiveIndex(viewableItems[0].index ?? 0);
-    }
-  };
-
-  const is_last_slide = activeIndex === slides.length - 1;
-
-  const handle_next = async () => {
-    if (is_last_slide) {
-      await AsyncStorage.setItem('hasSeenOnboarding', 'true');
-      onDone();
-    } else {
-      flat_list_ref.current?.scrollToIndex({
-        index: activeIndex + 1,
-        animated: true,
-      });
-    }
-  };
+  const isLastSlide = activeIndex === slides.length - 1;
 
   return (
-    <View className='flex-1 bg-primary'>
+    <View className='flex-1' style={{ backgroundColor: Colors.primary }}>
       <StatusBar style='light' />
 
+      <View
+        className='absolute rounded-full'
+        style={{
+          top: -180,
+          right: -120,
+          width: 360,
+          height: 360,
+          backgroundColor: 'rgba(0,0,0,0.12)',
+        }}
+      />
+      <View
+        className='absolute rounded-full'
+        style={{
+          bottom: -220,
+          left: -160,
+          width: 420,
+          height: 420,
+          backgroundColor: 'rgba(255,255,255,0.1)',
+        }}
+      />
+
+      <View style={{ paddingTop: insets.top + 14 }} className='px-7'>
+        <View className='flex-row gap-2'>
+          {slides.map((slide, index) => {
+            const isActive = index === activeIndex;
+            const isCompleted = index < activeIndex;
+
+            return (
+              <View
+                key={slide.id}
+                className='h-1 flex-1 rounded-full'
+                style={{
+                  backgroundColor:
+                    isActive || isCompleted
+                      ? 'rgba(255,255,255,0.85)'
+                      : 'rgba(255,255,255,0.4)',
+                }}
+              />
+            );
+          })}
+        </View>
+      </View>
+
       <FlatList
-        ref={flat_list_ref}
+        ref={listRef}
         data={slides}
         keyExtractor={(item) => item.id}
-        renderItem={({ item }) => <Slide item={item} />}
         horizontal
         pagingEnabled
         showsHorizontalScrollIndicator={false}
-        onViewableItemsChanged={on_viewable_items_changed}
-        viewabilityConfig={{ viewAreaCoveragePercentThreshold: 50 }}
+        onViewableItemsChanged={onViewableItemsChanged.current}
+        viewabilityConfig={viewabilityConfig.current}
+        renderItem={({ item }) => (
+          <View style={{ width }} className='flex-1 px-7 items-center justify-center'>
+            <Text
+              className='text-white text-center'
+              style={{
+                fontFamily: 'Poppins_700Bold',
+                fontSize: 50,
+                lineHeight: 52,
+                letterSpacing: -1.3,
+              }}
+            >
+              {item.title}
+            </Text>
+
+            <Text
+              className='text-white/85 text-center mt-4'
+              style={{ fontFamily: 'Poppins_300Light', fontSize: 15, lineHeight: 22 }}
+            >
+              {item.subtitle}
+            </Text>
+
+            <Image
+              source={{ uri: item.image }}
+              className='mt-7'
+              style={{ width: 360, height: 300, borderRadius: 24 }}
+              resizeMode='contain'
+            />
+          </View>
+        )}
       />
 
-      <View className='absolute bottom-10 left-0 right-0 items-center px-8'>
-        <Dots activeIndex={activeIndex} />
-
+      <View className='px-7' style={{ paddingBottom: insets.bottom + 20 }}>
         <TouchableOpacity
-          onPress={handle_next}
-          className='mt-8 w-full bg-white rounded-2xl py-4 items-center'
-          activeOpacity={0.85}
+          onPress={handlePrimaryAction}
+          activeOpacity={0.9}
+          className='h-14 rounded-full items-center justify-center'
+          style={{ backgroundColor: '#FFF6EB' }}
         >
           <Text
-            className='text-primary text-base'
-            style={{ fontFamily: 'Poppins_600SemiBold' }}
+            style={{
+              fontFamily: 'Poppins_600SemiBold',
+              fontSize: 18,
+              color: Colors.primaryDark,
+            }}
           >
-            {is_last_slide ? 'Começar' : 'Próximo'}
+            {isLastSlide ? 'Começar' : 'Próximo'}
           </Text>
         </TouchableOpacity>
 
-        {!is_last_slide && (
-          <TouchableOpacity
-            onPress={async () => {
-              await AsyncStorage.setItem('hasSeenOnboarding', 'true');
-              onDone();
-            }}
-            className='mt-4'
-          >
-            <Text
-              className='text-white/60 text-sm'
-              style={{ fontFamily: 'Poppins_300Light' }}
-            >
-              Pular
-            </Text>
-          </TouchableOpacity>
-        )}
-      </View>
-
-      {activeIndex === 0 && (
-        <View className='absolute bottom-52 left-0 right-0 items-center'>
+        <TouchableOpacity
+          onPress={finish}
+          activeOpacity={0.85}
+          className='h-14 rounded-full items-center justify-center mt-4 border'
+          style={{ borderColor: 'rgba(255,255,255,0.55)' }}
+        >
           <Text
-            className='text-white/70 text-xs tracking-widest'
-            style={{ fontFamily: 'Poppins_300Light' }}
+            style={{
+              fontFamily: 'Poppins_600SemiBold',
+              fontSize: 17,
+              color: '#FFF',
+            }}
           >
-            SUA COMIDA FAVORITA, ENTREGA RÁPIDA.
+            {isLastSlide ? 'Já tenho uma conta' : 'Pular'}
           </Text>
-        </View>
-      )}
+        </TouchableOpacity>
+
+        <Text
+          className='text-center mt-5 text-white/80'
+          style={{ fontFamily: 'Poppins_300Light', fontSize: 12, lineHeight: 18 }}
+        >
+          Ao continuar com Email, Google ou contas sociais, você confirma que
+          aceita nossos Termos de Serviço e Política de Privacidade.
+        </Text>
+      </View>
     </View>
   );
 }

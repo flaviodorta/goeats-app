@@ -1,5 +1,6 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { TextInput, TouchableOpacity, View } from 'react-native';
+
 import { Colors } from '../../constants/colors';
 
 type Props = {
@@ -9,17 +10,28 @@ type Props = {
   autoFocus?: boolean;
 };
 
-export default function SearchBar({ value, onChangeText, onPress, autoFocus }: Props) {
+export default function SearchBar({
+  value,
+  onChangeText,
+  onPress,
+  autoFocus,
+}: Props) {
   const inner = (
     <View
-      className='flex-row items-center bg-surface rounded-2xl px-4 h-12'
-      style={{ elevation: 3, shadowColor: '#000', shadowOpacity: 0.08, shadowRadius: 8 }}
+      className='h-14 rounded-full flex-row items-center px-5'
+      style={{
+        backgroundColor: '#FFF',
+        elevation: 3,
+        shadowColor: '#000',
+        shadowOpacity: 0.12,
+        shadowRadius: 12,
+      }}
     >
-      <MaterialCommunityIcons name='magnify' size={20} color={Colors.textSecondary} />
+      <MaterialCommunityIcons name='magnify' size={22} color={Colors.textSecondary} />
       <TextInput
         value={value}
         onChangeText={onChangeText}
-        placeholder='Buscar comida ou restaurantes'
+        placeholder='Buscar'
         placeholderTextColor={Colors.disabled}
         editable={!onPress}
         autoFocus={autoFocus}
@@ -27,20 +39,26 @@ export default function SearchBar({ value, onChangeText, onPress, autoFocus }: P
           flex: 1,
           marginLeft: 8,
           fontFamily: 'Poppins_400Regular',
-          fontSize: 14,
+          fontSize: 15,
           color: Colors.textPrimary,
         }}
       />
+      <View
+        className='w-8 h-8 rounded-full items-center justify-center'
+        style={{ backgroundColor: Colors.chip }}
+      >
+        <MaterialCommunityIcons name='tune' size={17} color={Colors.primaryDark} />
+      </View>
     </View>
   );
 
   if (onPress) {
     return (
-      <TouchableOpacity className='mx-5 mb-4' onPress={onPress} activeOpacity={0.85}>
+      <TouchableOpacity onPress={onPress} activeOpacity={0.85}>
         {inner}
       </TouchableOpacity>
     );
   }
 
-  return <View className='mx-5 mb-4'>{inner}</View>;
+  return inner;
 }

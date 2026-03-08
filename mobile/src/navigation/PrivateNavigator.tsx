@@ -1,13 +1,16 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+
 import BottomTabBar from '../components/navigation/BottomTabBar';
+import CartScreen from '../screens/CartScreen';
 import HomeScreen from '../screens/HomeScreen';
 import OffersScreen from '../screens/OffersScreen';
 import OrdersScreen from '../screens/OrdersScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import RestaurantMenuScreen from '../screens/RestaurantMenuScreen';
-import { PrivateStackParamList, PrivateTabParamList } from './types';
+import SearchResultsScreen from '../screens/SearchResultsScreen';
 import { Tab as TabItem } from '../types';
+import { PrivateStackParamList, PrivateTabParamList } from './types';
 
 const Stack = createNativeStackNavigator<PrivateStackParamList>();
 const Tab = createBottomTabNavigator<PrivateTabParamList>();
@@ -15,9 +18,9 @@ const Tab = createBottomTabNavigator<PrivateTabParamList>();
 const tabs: TabItem[] = [
   {
     id: 'explore',
-    label: 'Explorar',
-    icon: 'compass-outline',
-    activeIcon: 'compass',
+    label: 'Início',
+    icon: 'home-outline',
+    activeIcon: 'home',
   },
   {
     id: 'orders',
@@ -25,7 +28,12 @@ const tabs: TabItem[] = [
     icon: 'receipt-outline',
     activeIcon: 'receipt',
   },
-  { id: 'offers', label: 'Ofertas', icon: 'tag-outline', activeIcon: 'tag' },
+  {
+    id: 'offers',
+    label: 'Ofertas',
+    icon: 'tag-outline',
+    activeIcon: 'tag',
+  },
   {
     id: 'profile',
     label: 'Perfil',
@@ -76,6 +84,8 @@ export default function PrivateNavigator() {
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name='PrivateTabs' component={PrivateTabs} />
       <Stack.Screen name='RestaurantMenu' component={RestaurantMenuScreen} />
+      <Stack.Screen name='Cart' component={CartScreen} />
+      <Stack.Screen name='SearchResults' component={SearchResultsScreen} />
     </Stack.Navigator>
   );
 }

@@ -7,9 +7,11 @@ import {
 } from '@expo-google-fonts/poppins';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { StatusBar } from 'expo-status-bar';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import {
   ActivityIndicator,
+  Dimensions,
+  Image,
   ScrollView,
   Text,
   TouchableOpacity,
@@ -18,15 +20,17 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import CartBar from '../components/menu/CartBar';
-import MenuItemComponent from '../components/menu/MenuItem';
 import MenuTabs from '../components/menu/MenuTabs';
 import { Colors } from '../constants/colors';
-import { PublicStackNavigation, PublicStackParamList } from '../navigation/types';
+import { PublicStackParamList } from '../navigation/types';
 import { useCartStore } from '../stores/cartStore';
+
+const { width } = Dimensions.get('window');
+const CARD_WIDTH = (width - 52) / 2;
 
 export default function RestaurantMenuScreen() {
   const insets = useSafeAreaInsets();
-  const navigation = useNavigation<PublicStackNavigation>();
+  const navigation = useNavigation<any>();
   const route = useRoute<RouteProp<PublicStackParamList, 'RestaurantMenu'>>();
   const { restaurant } = route.params;
 
@@ -35,14 +39,14 @@ export default function RestaurantMenuScreen() {
     Poppins_600SemiBold,
     Poppins_700Bold,
   });
+
   const [selectedTab, setSelectedTab] = useState('popular');
+  const { items, addItem, totalItems, totalPrice } = useCartStore();
 
-  const { items, addItem, removeItem, totalItems, totalPrice } = useCartStore();
-
-  const addToCart = (item: (typeof restaurant.menu)[0]) =>
-    addItem(restaurant, item);
-  const removeFromCart = (item: (typeof restaurant.menu)[0]) =>
-    removeItem(item.id);
+  const filteredMenu = useMemo(
+    () => restaurant.menu.filter((item) => item.tab === selectedTab),
+    [restaurant.menu, selectedTab],
+  );
 
   if (!fontsLoaded) {
     return (
@@ -55,227 +59,226 @@ export default function RestaurantMenuScreen() {
   const itemCount = totalItems();
   const orderTotal = totalPrice();
 
-  const filteredMenu = restaurant.menu.filter(
-    (item) => item.tab === selectedTab,
-  );
-
   return (
     <View className='flex-1 bg-background'>
       <StatusBar style='light' />
 
-      {/* Hero */}
-      <View
-        className='w-full items-center justify-center'
-        style={{
-          height: 220,
-          backgroundColor: `${restaurant.iconColor}20`,
-          paddingTop: insets.top,
-        }}
-      >
-        <MaterialCommunityIcons
-          name={restaurant.iconName as any}
-          size={90}
-          color={restaurant.iconColor}
-          style={{ opacity: 0.7 }}
-        />
-
-        <TouchableOpacity
-          onPress={() => navigation.goBack()}
-          className='absolute top-0 left-4 w-9 h-9 rounded-full bg-surface items-center justify-center'
-          style={{
-            top: insets.top + 12,
-            elevation: 3,
-            shadowColor: '#000',
-            shadowOpacity: 0.1,
-            shadowRadius: 4,
-          }}
-          activeOpacity={0.8}
-        >
-          <MaterialCommunityIcons
-            name='arrow-left'
-            size={20}
-            color={Colors.textPrimary}
-          />
-        </TouchableOpacity>
-
-        <View
-          className='absolute flex-row gap-2'
-          style={{ top: insets.top + 12, right: 16 }}
-        >
-          <TouchableOpacity
-            className='w-9 h-9 rounded-full bg-surface items-center justify-center'
-            style={{
-              elevation: 3,
-              shadowColor: '#000',
-              shadowOpacity: 0.1,
-              shadowRadius: 4,
-            }}
-            activeOpacity={0.8}
-          >
-            <MaterialCommunityIcons
-              name='share-variant-outline'
-              size={18}
-              color={Colors.textPrimary}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity
-            className='w-9 h-9 rounded-full bg-surface items-center justify-center'
-            style={{
-              elevation: 3,
-              shadowColor: '#000',
-              shadowOpacity: 0.1,
-              shadowRadius: 4,
-            }}
-            activeOpacity={0.8}
-          >
-            <MaterialCommunityIcons
-              name='heart-outline'
-              size={18}
-              color={Colors.textPrimary}
-            />
-          </TouchableOpacity>
-        </View>
-      </View>
-
-      {/* Info card */}
-      <View
-        className='bg-surface px-5 py-4'
-        style={{
-          elevation: 2,
-          shadowColor: '#000',
-          shadowOpacity: 0.06,
-          shadowRadius: 8,
-        }}
-      >
-        <View className='flex-row items-start justify-between'>
-          <View className='flex-1 mr-3'>
-            <Text
-              style={{
-                fontFamily: 'Poppins_700Bold',
-                fontSize: 20,
-                color: Colors.textPrimary,
-              }}
-            >
-              {restaurant.name}
-            </Text>
-            <Text
-              style={{
-                fontFamily: 'Poppins_400Regular',
-                fontSize: 13,
-                color: Colors.textSecondary,
-                marginTop: 2,
-              }}
-            >
-              {restaurant.categories.join(' • ')}
-            </Text>
-          </View>
-          <View
-            className='flex-row items-center rounded-xl px-3 py-1'
-            style={{ backgroundColor: `${Colors.primary}15` }}
-          >
-            <MaterialCommunityIcons
-              name='star'
-              size={14}
-              color={Colors.primary}
-            />
-            <Text
-              style={{
-                fontFamily: 'Poppins_700Bold',
-                fontSize: 14,
-                color: Colors.primary,
-                marginLeft: 4,
-              }}
-            >
-              {restaurant.rating}
-            </Text>
-          </View>
-        </View>
-
-        <View className='flex-row items-center mt-3 pt-3 border-t border-border gap-4'>
-          <View className='flex-row items-center gap-1'>
-            <MaterialCommunityIcons
-              name='clock-outline'
-              size={14}
-              color={Colors.textSecondary}
-            />
-            <Text
-              style={{
-                fontFamily: 'Poppins_400Regular',
-                fontSize: 12,
-                color: Colors.textSecondary,
-              }}
-            >
-              {restaurant.deliveryTime}
-            </Text>
-          </View>
-          <View className='flex-row items-center gap-1'>
-            <MaterialCommunityIcons
-              name='moped-outline'
-              size={14}
-              color={Colors.textSecondary}
-            />
-            <Text
-              style={{
-                fontFamily: 'Poppins_400Regular',
-                fontSize: 12,
-                color: Colors.textSecondary,
-              }}
-            >
-              {restaurant.deliveryFee}
-            </Text>
-          </View>
-          <View className='flex-row items-center gap-1'>
-            <MaterialCommunityIcons
-              name='map-marker-outline'
-              size={14}
-              color={Colors.textSecondary}
-            />
-            <Text
-              style={{
-                fontFamily: 'Poppins_400Regular',
-                fontSize: 12,
-                color: Colors.textSecondary,
-              }}
-            >
-              {restaurant.distance}
-            </Text>
-          </View>
-        </View>
-      </View>
-
-      {/* Tabs */}
-      <MenuTabs selected={selectedTab} onSelect={setSelectedTab} />
-
-      {/* Menu list */}
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: itemCount > 0 ? 100 : 20 }}
+        contentContainerStyle={{ paddingBottom: itemCount > 0 ? 110 : 24 }}
       >
-        <Text
-          className='px-5 pt-5 pb-2'
-          style={{
-            fontFamily: 'Poppins_700Bold',
-            fontSize: 16,
-            color: Colors.textPrimary,
-          }}
-        >
-          {selectedTab === 'popular'
-            ? 'Mais pedidos'
-            : selectedTab === 'mains'
-              ? 'Pratos'
-              : selectedTab === 'drinks'
-                ? 'Bebidas'
-                : 'Sobremesas'}
-        </Text>
-        {filteredMenu.map((item) => (
-          <MenuItemComponent
-            key={item.id}
-            item={item}
-            quantity={items[item.id]?.quantity ?? 0}
-            onAdd={() => addToCart(item)}
-            onRemove={() => removeFromCart(item)}
+        <View style={{ height: 220, backgroundColor: Colors.primary }}>
+          <Image
+            source={{ uri: restaurant.coverImage }}
+            style={{ width: '100%', height: '100%', position: 'absolute', opacity: 0.3 }}
+            resizeMode='cover'
           />
-        ))}
+
+          <View style={{ paddingTop: insets.top + 12 }} className='px-4'>
+            <View className='flex-row items-center justify-between'>
+              <TouchableOpacity
+                onPress={() => navigation.goBack()}
+                className='w-9 h-9 rounded-full bg-white/25 items-center justify-center'
+                activeOpacity={0.85}
+              >
+                <MaterialCommunityIcons name='arrow-left' size={20} color='#FFF' />
+              </TouchableOpacity>
+
+              <View className='flex-row gap-2'>
+                <TouchableOpacity className='w-9 h-9 rounded-full bg-white/25 items-center justify-center'>
+                  <MaterialCommunityIcons name='heart-outline' size={19} color='#FFF' />
+                </TouchableOpacity>
+                <TouchableOpacity className='w-9 h-9 rounded-full bg-white/25 items-center justify-center'>
+                  <MaterialCommunityIcons name='share-variant-outline' size={19} color='#FFF' />
+                </TouchableOpacity>
+              </View>
+            </View>
+
+            <Text
+              className='text-white mt-3'
+              style={{
+                fontFamily: 'Poppins_700Bold',
+                fontSize: 44,
+                lineHeight: 45,
+                letterSpacing: -1.2,
+              }}
+            >
+              Sabor{`\n`}irresistível
+            </Text>
+          </View>
+
+          <Image
+            source={{ uri: restaurant.heroImage }}
+            style={{ position: 'absolute', left: 20, bottom: 18, width: 88, height: 66 }}
+            resizeMode='cover'
+          />
+          <Image
+            source={{ uri: restaurant.coverImage }}
+            style={{ position: 'absolute', right: 20, bottom: 18, width: 88, height: 66 }}
+            resizeMode='cover'
+          />
+
+          <View
+            className='absolute rounded-full items-center justify-center border-4'
+            style={{
+              width: 76,
+              height: 76,
+              backgroundColor: '#CB4A22',
+              borderColor: '#F5F1EB',
+              left: width / 2 - 38,
+              bottom: -38,
+            }}
+          >
+            <Text
+              style={{
+                fontFamily: 'Poppins_700Bold',
+                fontSize: 38,
+                color: '#FCD68A',
+                textTransform: 'lowercase',
+              }}
+            >
+              {restaurant.name[0]}
+            </Text>
+          </View>
+        </View>
+
+        <View className='px-5 pt-12'>
+          <Text
+            className='text-center'
+            style={{ fontFamily: 'Poppins_700Bold', fontSize: 32, color: Colors.textPrimary }}
+          >
+            {restaurant.name}
+          </Text>
+
+          <View className='flex-row justify-center items-center mt-4'>
+            <View className='items-center px-4'>
+              <Text style={{ fontFamily: 'Poppins_700Bold', fontSize: 26, color: Colors.textPrimary }}>
+                {restaurant.followers}
+              </Text>
+              <Text style={{ fontFamily: 'Poppins_400Regular', fontSize: 12, color: Colors.textSecondary }}>
+                Seguidores
+              </Text>
+            </View>
+
+            <View className='h-10 w-[1px]' style={{ backgroundColor: Colors.border }} />
+
+            <View className='items-center px-4'>
+              <Text style={{ fontFamily: 'Poppins_700Bold', fontSize: 26, color: Colors.textPrimary }}>
+                {restaurant.productsCount.toLocaleString('pt-BR')}
+              </Text>
+              <Text style={{ fontFamily: 'Poppins_400Regular', fontSize: 12, color: Colors.textSecondary }}>
+                Produtos
+              </Text>
+            </View>
+
+            <View className='h-10 w-[1px]' style={{ backgroundColor: Colors.border }} />
+
+            <View className='items-center px-4'>
+              <View className='flex-row items-center'>
+                <MaterialCommunityIcons name='star' size={16} color={Colors.warning} />
+                <Text style={{ fontFamily: 'Poppins_700Bold', fontSize: 26, color: Colors.textPrimary, marginLeft: 4 }}>
+                  {restaurant.rating}
+                </Text>
+              </View>
+              <Text style={{ fontFamily: 'Poppins_400Regular', fontSize: 12, color: Colors.textSecondary }}>
+                Avaliação
+              </Text>
+            </View>
+          </View>
+
+          <View className='flex-row gap-3 mt-5'>
+            <TouchableOpacity
+              className='flex-1 h-12 rounded-full items-center justify-center'
+              style={{ backgroundColor: '#000' }}
+              activeOpacity={0.85}
+            >
+              <Text style={{ fontFamily: 'Poppins_600SemiBold', fontSize: 16, color: '#FFF' }}>Seguir</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              className='flex-1 h-12 rounded-full items-center justify-center border'
+              style={{ borderColor: Colors.border, backgroundColor: '#FFF' }}
+              activeOpacity={0.85}
+            >
+              <Text style={{ fontFamily: 'Poppins_600SemiBold', fontSize: 16, color: Colors.textPrimary }}>
+                Conversar
+              </Text>
+            </TouchableOpacity>
+          </View>
+
+          <View
+            className='mt-4 rounded-full px-4 py-3 flex-row items-center'
+            style={{ backgroundColor: '#F0ECE7' }}
+          >
+            <View
+              className='w-8 h-8 rounded-full items-center justify-center mr-3'
+              style={{ backgroundColor: 'rgba(218, 78, 28, 0.2)' }}
+            >
+              <MaterialCommunityIcons name='bike-fast' size={16} color={Colors.primary} />
+            </View>
+            <View>
+              <Text style={{ fontFamily: 'Poppins_600SemiBold', fontSize: 14, color: Colors.textPrimary }}>
+                Entrega em: {restaurant.deliveryTime}
+              </Text>
+              <Text style={{ fontFamily: 'Poppins_400Regular', fontSize: 12, color: Colors.textSecondary }}>
+                Taxa: {restaurant.deliveryFee} · Distância: {restaurant.distance}
+              </Text>
+            </View>
+          </View>
+        </View>
+
+        <View className='mt-4'>
+          <MenuTabs selected={selectedTab} onSelect={setSelectedTab} />
+        </View>
+
+        <View className='px-5 pt-4 flex-row flex-wrap justify-between'>
+          {filteredMenu.map((item) => {
+            const qty = items[item.id]?.quantity ?? 0;
+
+            return (
+              <View
+                key={item.id}
+                style={{ width: CARD_WIDTH }}
+                className='rounded-2xl overflow-hidden mb-4 border bg-white'
+              >
+                <Image source={{ uri: item.image }} style={{ width: '100%', height: 106 }} resizeMode='cover' />
+
+                <TouchableOpacity
+                  onPress={() => addItem(restaurant, item)}
+                  className='absolute top-2 right-2 w-7 h-7 rounded-full items-center justify-center'
+                  style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}
+                  activeOpacity={0.85}
+                >
+                  <MaterialCommunityIcons name='plus' size={15} color='#FFF' />
+                </TouchableOpacity>
+
+                {qty > 0 && (
+                  <View className='absolute top-2 left-2 rounded-full px-2 py-[2px]' style={{ backgroundColor: Colors.primary }}>
+                    <Text style={{ fontFamily: 'Poppins_700Bold', fontSize: 10, color: '#FFF' }}>{qty}</Text>
+                  </View>
+                )}
+
+                <View className='px-3 py-3'>
+                  <Text numberOfLines={1} style={{ fontFamily: 'Poppins_600SemiBold', fontSize: 14, color: Colors.textPrimary }}>
+                    {item.name}
+                  </Text>
+
+                  <View className='flex-row items-center justify-between mt-2'>
+                    <View className='flex-row items-center'>
+                      <MaterialCommunityIcons name='star' size={12} color={Colors.warning} />
+                      <Text style={{ fontFamily: 'Poppins_400Regular', fontSize: 11, color: Colors.textSecondary, marginLeft: 3 }}>
+                        {item.rating ?? restaurant.rating}
+                      </Text>
+                    </View>
+                    <Text style={{ fontFamily: 'Poppins_700Bold', fontSize: 18, color: Colors.textPrimary }}>
+                      R$ {item.price.toFixed(2).replace('.', ',')}
+                    </Text>
+                  </View>
+                </View>
+              </View>
+            );
+          })}
+        </View>
       </ScrollView>
 
       {itemCount > 0 && (

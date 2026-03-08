@@ -1,11 +1,12 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+
 import BottomTabBar from '../components/navigation/BottomTabBar';
+import CartScreen from '../screens/CartScreen';
 import HomeScreen from '../screens/HomeScreen';
 import LoginScreen from '../screens/LoginScreen';
 import OffersScreen from '../screens/OffersScreen';
 import RegisterScreen from '../screens/RegisterScreen';
-import CartScreen from '../screens/CartScreen';
 import RestaurantMenuScreen from '../screens/RestaurantMenuScreen';
 import SearchResultsScreen from '../screens/SearchResultsScreen';
 import { Tab as TabItem } from '../types';
@@ -15,10 +16,10 @@ const Stack = createNativeStackNavigator<PublicStackParamList>();
 const Tab = createBottomTabNavigator<PublicTabParamList>();
 
 const tabs: TabItem[] = [
-  { id: 'explore', label: 'Explorar', icon: 'compass-outline', activeIcon: 'compass' },
-  { id: 'orders',  label: 'Pedidos',  icon: 'receipt-outline', activeIcon: 'receipt' },
-  { id: 'offers',  label: 'Ofertas',  icon: 'tag-outline',     activeIcon: 'tag' },
-  { id: 'profile', label: 'Perfil',   icon: 'account-outline', activeIcon: 'account' },
+  { id: 'explore', label: 'Início', icon: 'home-outline', activeIcon: 'home' },
+  { id: 'orders', label: 'Pedidos', icon: 'receipt-outline', activeIcon: 'receipt' },
+  { id: 'offers', label: 'Ofertas', icon: 'tag-outline', activeIcon: 'tag' },
+  { id: 'profile', label: 'Perfil', icon: 'account-outline', activeIcon: 'account' },
 ];
 
 function PublicTabs() {
@@ -31,13 +32,14 @@ function PublicTabs() {
           Offers: 'offers',
         };
         const activeTab = routeToTab[props.state.routes[props.state.index].name] ?? 'explore';
+
         return (
           <BottomTabBar
             tabs={tabs}
             activeTab={activeTab}
             onTabPress={(tabId) => {
               if (tabId === 'explore') props.navigation.navigate('Explore');
-              if (tabId === 'offers')  props.navigation.navigate('Offers');
+              if (tabId === 'offers') props.navigation.navigate('Offers');
               if (tabId === 'orders' || tabId === 'profile') {
                 props.navigation.getParent()?.navigate('Login');
               }
@@ -46,8 +48,8 @@ function PublicTabs() {
         );
       }}
     >
-      <Tab.Screen name="Explore" component={HomeScreen} />
-      <Tab.Screen name="Offers" component={OffersScreen} />
+      <Tab.Screen name='Explore' component={HomeScreen} />
+      <Tab.Screen name='Offers' component={OffersScreen} />
     </Tab.Navigator>
   );
 }
@@ -55,12 +57,12 @@ function PublicTabs() {
 export default function PublicNavigator() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="PublicTabs" component={PublicTabs} />
-      <Stack.Screen name="RestaurantMenu" component={RestaurantMenuScreen} />
-      <Stack.Screen name="Cart" component={CartScreen} />
-      <Stack.Screen name="SearchResults" component={SearchResultsScreen} />
-      <Stack.Screen name="Login" component={LoginScreen} />
-      <Stack.Screen name="Register" component={RegisterScreen} />
+      <Stack.Screen name='PublicTabs' component={PublicTabs} />
+      <Stack.Screen name='RestaurantMenu' component={RestaurantMenuScreen} />
+      <Stack.Screen name='Cart' component={CartScreen} />
+      <Stack.Screen name='SearchResults' component={SearchResultsScreen} />
+      <Stack.Screen name='Login' component={LoginScreen} />
+      <Stack.Screen name='Register' component={RegisterScreen} />
     </Stack.Navigator>
   );
 }

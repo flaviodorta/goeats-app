@@ -5,31 +5,30 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // Principais
-        primary: '#E53935',
-        'primary-dark': '#B71C1C',
-        accent: '#FF6F61',
-        'primary-light': '#FF8A80',
+        primary: '#DA4E1C',
+        'primary-dark': '#1C1410',
+        accent: '#F6B24A',
+        'primary-light': '#F4793D',
 
-        // Neutras
-        background: '#FFF5F5',
-        'text-primary': '#212121',
-        'text-secondary': '#757575',
+        background: '#F5F1EB',
         surface: '#FFFFFF',
+        'text-primary': '#1A1512',
+        'text-secondary': '#7D7269',
 
-        // Semânticas
-        success: '#4CAF50',
-        warning: '#FFA726',
-        error: '#D32F2F',
-        info: '#1976D2',
+        success: '#2F9A61',
+        warning: '#EEA83B',
+        error: '#C43A2D',
+        info: '#2E6BD4',
 
-        // Auxiliares
-        border: '#E0E0E0',
-        disabled: '#BDBDBD',
-        skeleton: '#F0F0F0',
+        border: '#ECE3D9',
+        disabled: '#B9AEA4',
+        skeleton: '#EFE8DE',
+        chip: '#F3ECE3',
+        hero: '#211B16',
+        cream: '#FFF3E6',
       },
       fontFamily: {
-        'poppins': ['Poppins_400Regular'],
+        poppins: ['Poppins_400Regular'],
         'poppins-medium': ['Poppins_500Medium'],
         'poppins-semibold': ['Poppins_600SemiBold'],
         'poppins-bold': ['Poppins_700Bold'],

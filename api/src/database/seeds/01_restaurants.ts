@@ -1,0 +1,241 @@
+import type { Knex } from 'knex';
+
+export async function seed(knex: Knex): Promise<void> {
+  await knex('menu_items').del();
+  await knex('restaurants').del();
+
+  const [pizza, sushi, burger, green] = await knex('restaurants')
+    .insert([
+      {
+        name: 'The Pizza Hub',
+        categories: ['Italiana', 'Pizza'],
+        rating: 4.8,
+        delivery_fee: 'R$ 2,99',
+        delivery_time: '20-30 min',
+        distance: '1.2 km',
+        icon_name: 'pizza',
+        icon_color: '#E53935',
+        promoted: true,
+      },
+      {
+        name: 'Sushi Samurai',
+        categories: ['Japonesa', 'Sushi'],
+        rating: 4.6,
+        delivery_fee: 'Grátis',
+        delivery_time: '35-50 min',
+        distance: '2.8 km',
+        icon_name: 'fish',
+        icon_color: '#1976D2',
+        promoted: false,
+      },
+      {
+        name: 'Burger Bros',
+        categories: ['Americana', 'Burger'],
+        rating: 4.5,
+        delivery_fee: 'R$ 4,99',
+        delivery_time: '25-40 min',
+        distance: '0.9 km',
+        icon_name: 'hamburger',
+        icon_color: '#FF6F61',
+        promoted: false,
+      },
+      {
+        name: 'Green Bowl',
+        categories: ['Saudável', 'Fit'],
+        rating: 4.7,
+        delivery_fee: 'R$ 1,99',
+        delivery_time: '15-25 min',
+        distance: '0.5 km',
+        icon_name: 'leaf',
+        icon_color: '#4CAF50',
+        promoted: false,
+      },
+    ])
+    .returning<{ id: string }[]>('id');
+
+  await knex('menu_items').insert([
+    // The Pizza Hub
+    {
+      restaurant_id: pizza.id,
+      name: 'Truffle Mushroom Risotto',
+      description:
+        'Arroz arbóreo cremoso com cogumelos selvagens e óleo de trufa.',
+      price: 12.9,
+      tab: 'popular',
+      icon_name: 'bowl-mix',
+    },
+    {
+      restaurant_id: pizza.id,
+      name: 'Classic Margherita Pizza',
+      description:
+        'Mussarela de búfala fresca, tomates san marzano e manjericão.',
+      price: 14.5,
+      tab: 'popular',
+      icon_name: 'pizza',
+    },
+    {
+      restaurant_id: pizza.id,
+      name: 'Pesto Genovese Pasta',
+      description:
+        'Linguine artesanal com pesto de manjericão e pinhões torrados.',
+      price: 13.2,
+      tab: 'popular',
+      icon_name: 'noodles',
+    },
+    {
+      restaurant_id: pizza.id,
+      name: 'Pepperoni Especial',
+      description: 'Molho de tomate, mussarela e pepperoni importado.',
+      price: 16.9,
+      tab: 'mains',
+      icon_name: 'pizza',
+    },
+    {
+      restaurant_id: pizza.id,
+      name: 'Tiramisù',
+      description: 'Sobremesa italiana clássica com mascarpone e café.',
+      price: 8.5,
+      tab: 'desserts',
+      icon_name: 'cake',
+    },
+    {
+      restaurant_id: pizza.id,
+      name: 'Suco de Limão',
+      description: 'Suco natural gelado 500ml.',
+      price: 6.0,
+      tab: 'drinks',
+      icon_name: 'cup',
+    },
+    // Sushi Samurai
+    {
+      restaurant_id: sushi.id,
+      name: 'Combo Salmão 20 peças',
+      description: 'Niguiri, uramaki e sashimi de salmão fresco.',
+      price: 42.9,
+      tab: 'popular',
+      icon_name: 'fish',
+    },
+    {
+      restaurant_id: sushi.id,
+      name: 'Hot Roll Especial',
+      description: 'Camarão empanado, cream cheese e molho teriyaki.',
+      price: 29.9,
+      tab: 'popular',
+      icon_name: 'food',
+    },
+    {
+      restaurant_id: sushi.id,
+      name: 'Temaki Atum',
+      description: 'Cone de alga com atum, pepino e cebolinha.',
+      price: 18.5,
+      tab: 'mains',
+      icon_name: 'food-variant',
+    },
+    {
+      restaurant_id: sushi.id,
+      name: 'Missoshiro',
+      description: 'Sopa de missô tradicional com tofu e alga.',
+      price: 7.0,
+      tab: 'drinks',
+      icon_name: 'bowl-mix',
+    },
+    {
+      restaurant_id: sushi.id,
+      name: 'Mochi de Morango',
+      description: 'Bolinho de arroz japonês recheado com sorvete.',
+      price: 9.9,
+      tab: 'desserts',
+      icon_name: 'cake-variant',
+    },
+    // Burger Bros
+    {
+      restaurant_id: burger.id,
+      name: 'Classic Smash Burger',
+      description: 'Blend 160g, queijo cheddar, picles e molho especial.',
+      price: 22.9,
+      tab: 'popular',
+      icon_name: 'hamburger',
+    },
+    {
+      restaurant_id: burger.id,
+      name: 'BBQ Bacon Burger',
+      description: 'Blend 200g, bacon crocante, cebola caramelizada e BBQ.',
+      price: 27.9,
+      tab: 'popular',
+      icon_name: 'hamburger',
+    },
+    {
+      restaurant_id: burger.id,
+      name: 'Batata Frita Temperada',
+      description: 'Porção 200g com tempero especial da casa.',
+      price: 12.0,
+      tab: 'popular',
+      icon_name: 'food',
+    },
+    {
+      restaurant_id: burger.id,
+      name: 'Chicken Crispy',
+      description: 'Frango crocante, alface, tomate e maionese de ervas.',
+      price: 19.9,
+      tab: 'mains',
+      icon_name: 'food-drumstick',
+    },
+    {
+      restaurant_id: burger.id,
+      name: 'Milk Shake Oreo',
+      description: 'Sorvete de baunilha, leite e Oreo triturado 400ml.',
+      price: 14.9,
+      tab: 'drinks',
+      icon_name: 'cup',
+    },
+    {
+      restaurant_id: burger.id,
+      name: 'Brownie com Sorvete',
+      description: 'Brownie quente com sorvete de baunilha e calda.',
+      price: 11.9,
+      tab: 'desserts',
+      icon_name: 'cake',
+    },
+    // Green Bowl
+    {
+      restaurant_id: green.id,
+      name: 'Açaí Bowl Tropical',
+      description: 'Açaí com granola, banana, morango e mel orgânico.',
+      price: 19.9,
+      tab: 'popular',
+      icon_name: 'bowl-mix',
+    },
+    {
+      restaurant_id: green.id,
+      name: 'Buddha Bowl Vegano',
+      description: 'Grão-de-bico, quinoa, legumes assados e tahine.',
+      price: 24.9,
+      tab: 'popular',
+      icon_name: 'leaf',
+    },
+    {
+      restaurant_id: green.id,
+      name: 'Wrap Integral Frango',
+      description: 'Frango grelhado, alface, tomate e molho de iogurte.',
+      price: 18.5,
+      tab: 'mains',
+      icon_name: 'food-variant',
+    },
+    {
+      restaurant_id: green.id,
+      name: 'Smoothie Verde',
+      description: 'Espinafre, banana, maçã e gengibre 350ml.',
+      price: 12.9,
+      tab: 'drinks',
+      icon_name: 'cup',
+    },
+    {
+      restaurant_id: green.id,
+      name: 'Pudim de Chia',
+      description: 'Chia com leite de coco e calda de frutas vermelhas.',
+      price: 9.9,
+      tab: 'desserts',
+      icon_name: 'cake-variant',
+    },
+  ]);
+}

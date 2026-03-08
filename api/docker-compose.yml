@@ -1,0 +1,15 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: goeats-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: goeats
+    ports:
+      - '5432:5432'
+    volumes:
+      - goeats_pgdata:/var/lib/postgresql/data
+
+volumes:
+  goeats_pgdata:

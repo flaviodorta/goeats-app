@@ -30,15 +30,15 @@
 - [x] Tela `CartScreen` — itens, quantidades, subtotal, taxa, total
 - [x] Conectar `CartBar` ao `CartScreen`
 - [x] Conectar `SearchBar` à tela `SearchResultsScreen`
-- [ ] Listagem de resultados com estado vazio
+- [x] Listagem de resultados com estado vazio
 
 ### API
 
-- [ ] Criar projeto Node.js + Express + TypeScript em `api/`
-- [ ] Configurar Knex + PostgreSQL + migrations + seeds
-- [ ] `GET /restaurants` — listar com filtro por categoria
-- [ ] `GET /restaurants/:id` — detalhes
-- [ ] `GET /restaurants/:id/menu` — cardápio completo
+- [x] Criar projeto **NestJS** + TypeScript em `api/`
+- [x] Configurar Knex + PostgreSQL + migrations + seeds
+- [x] `GET /restaurants` — listar com filtro por categoria
+- [x] `GET /restaurants/:id` — detalhes
+- [x] `GET /restaurants/:id/menu` — cardápio completo
 
 ### Integração
 
@@ -71,7 +71,7 @@
 - [ ] `POST /auth/register` — cadastro
 - [ ] `POST /auth/login` — retorna JWT
 - [ ] `POST /auth/refresh` — renovar token
-- [ ] Middleware de autenticação JWT
+- [ ] Guard de autenticação JWT (`@nestjs/passport` + `passport-jwt`)
 - [ ] Hash de senha com `bcrypt`
 - [ ] `POST /orders` — criar pedido (rota privada)
 - [ ] `GET /users/me/addresses` — listar endereços
@@ -204,15 +204,15 @@
 
 ## 5. API — Fase 1: Monólito Simples (MVP)
 
-> Objetivo: ter uma API funcionando conectada ao mobile. Sem DDD, sem complexidade. Foco em entregar produto.
+> Objetivo: ter uma API funcionando conectada ao mobile. NestJS com módulos simples, sem DDD ainda. Foco em entregar produto.
 
 ### 5.1 Setup inicial
 
-- [ ] Criar projeto Node.js com Express + TypeScript em `api/`
+- [ ] Criar projeto **NestJS** + TypeScript em `api/` (`nest new api`)
 - [ ] Configurar `tsconfig.json`, `eslint`, `prettier`
 - [ ] Configurar banco PostgreSQL com Knex
 - [ ] Criar schema único `public` com todas as tabelas
-- [ ] Configurar variáveis de ambiente com `dotenv`
+- [ ] Configurar variáveis de ambiente com `@nestjs/config`
 - [ ] Criar script de migrations e seeds iniciais
 
 ### 5.2 Autenticação
@@ -220,7 +220,7 @@
 - [ ] `POST /auth/register` — cadastro de usuário
 - [ ] `POST /auth/login` — login, retorna JWT
 - [ ] `POST /auth/refresh` — renovar token
-- [ ] Middleware de autenticação JWT
+- [ ] Guard de autenticação JWT (`@nestjs/passport` + `passport-jwt`)
 - [ ] Hash de senha com `bcrypt`
 
 ### 5.3 Restaurantes
@@ -254,11 +254,11 @@
 
 ## 6. API — Fase 2: Monólito Modular com DDD
 
-> Objetivo: refatorar o monólito simples para estrutura modular com DDD. Preparar para extração futura em microsserviços.
+> Objetivo: refatorar para estrutura modular com DDD dentro do NestJS. Cada NestJS Module vira um Bounded Context. Preparar para extração futura em microsserviços.
 
 ### 6.1 Reestruturação de pastas
 
-- [ ] Reorganizar código em módulos: `auth`, `ordering`, `restaurant`, `delivery`, `payments`
+- [ ] Reorganizar em NestJS Modules: `AuthModule`, `OrderingModule`, `RestaurantModule`, `DeliveryModule`, `PaymentsModule`
 - [ ] Cada módulo com camadas: `domain/`, `application/`, `infra/`
 - [ ] Criar schemas separados no banco por módulo (`auth.*`, `ordering.*`, etc.)
 - [ ] Cada módulo com sua própria instância Knex apontando para seu schema
@@ -328,7 +328,7 @@
 
 ### 7.4 Observabilidade
 
-- [ ] Logs estruturados com `pino`
+- [ ] Logs estruturados com `@nestjs/common` Logger ou `pino` via `nestjs-pino`
 - [ ] Rastrear eventos perdidos ou não processados
 - [ ] Health check dos consumers e relay
 

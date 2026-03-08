@@ -21,12 +21,12 @@ import CartBar from '../components/menu/CartBar';
 import MenuItemComponent from '../components/menu/MenuItem';
 import MenuTabs from '../components/menu/MenuTabs';
 import { Colors } from '../constants/colors';
-import { PublicStackParamList } from '../navigation/types';
+import { PublicStackNavigation, PublicStackParamList } from '../navigation/types';
 import { useCartStore } from '../stores/cartStore';
 
 export default function RestaurantMenuScreen() {
   const insets = useSafeAreaInsets();
-  const navigation = useNavigation();
+  const navigation = useNavigation<PublicStackNavigation>();
   const route = useRoute<RouteProp<PublicStackParamList, 'RestaurantMenu'>>();
   const { restaurant } = route.params;
 
@@ -283,7 +283,7 @@ export default function RestaurantMenuScreen() {
           <CartBar
             total={orderTotal}
             itemCount={itemCount}
-            onPress={() => {}}
+            onPress={() => navigation.navigate('Cart')}
           />
         </View>
       )}

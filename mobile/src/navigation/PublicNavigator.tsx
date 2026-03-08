@@ -5,6 +5,7 @@ import HomeScreen from '../screens/HomeScreen';
 import LoginScreen from '../screens/LoginScreen';
 import OffersScreen from '../screens/OffersScreen';
 import RegisterScreen from '../screens/RegisterScreen';
+import CartScreen from '../screens/CartScreen';
 import RestaurantMenuScreen from '../screens/RestaurantMenuScreen';
 import { Tab as TabItem } from '../types';
 import { PublicStackParamList, PublicTabParamList } from './types';
@@ -55,6 +56,7 @@ export default function PublicNavigator() {
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="PublicTabs" component={PublicTabs} />
       <Stack.Screen name="RestaurantMenu" component={RestaurantMenuScreen} />
+      <Stack.Screen name="Cart" component={CartScreen} />
       <Stack.Screen name="Login" component={LoginScreen} />
       <Stack.Screen name="Register" component={RegisterScreen} />
     </Stack.Navigator>

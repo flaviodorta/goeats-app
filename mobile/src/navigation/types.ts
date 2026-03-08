@@ -12,6 +12,7 @@ export type PublicTabParamList = {
 export type PublicStackParamList = {
   PublicTabs: undefined;
   RestaurantMenu: { restaurant: Restaurant };
+  Cart: undefined;
   Login: undefined;
   Register: undefined;
 };

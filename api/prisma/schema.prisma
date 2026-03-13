@@ -1,0 +1,83 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum MenuTab {
+  popular
+  mains
+  drinks
+  desserts
+}
+
+model Category {
+  id          String               @id @default(uuid())
+  name        String               @unique
+  restaurants RestaurantCategory[]
+
+  @@map("categories")
+}
+
+model RestaurantCategory {
+  restaurant_id String
+  category_id   String
+
+  restaurant Restaurant @relation(fields: [restaurant_id], references: [id], onDelete: Cascade)
+  category   Category   @relation(fields: [category_id], references: [id], onDelete: Cascade)
+
+  @@id([restaurant_id, category_id])
+  @@map("restaurant_categories")
+}
+
+model Restaurant {
+  id            String               @id @default(uuid())
+  name          String
+  rating        Float
+  delivery_fee  String
+  delivery_time String
+  distance      String
+  icon_name     String
+  icon_color    String
+  promoted      Boolean              @default(false)
+  cover_image   String?
+  created_at    DateTime             @default(now())
+  updated_at    DateTime             @updatedAt
+
+  categories    RestaurantCategory[]
+  menu_items    MenuItem[]
+
+  @@map("restaurants")
+}
+
+model MenuItem {
+  id            String     @id @default(uuid())
+  restaurant_id String
+  name          String
+  description   String
+  price         Float
+  tab           MenuTab
+  icon_name     String
+  image         String?
+  rating        Float?
+  created_at    DateTime   @default(now())
+
+  restaurant    Restaurant @relation(fields: [restaurant_id], references: [id], onDelete: Cascade)
+
+  @@map("menu_items")
+}
+
+model User {
+  id            String   @id @default(uuid())
+  name          String
+  email         String   @unique
+  password_hash String
+  phone         String   @default("")
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+
+  @@map("users")
+}

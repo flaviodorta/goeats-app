@@ -1,61 +1,49 @@
-import { Inject, Injectable } from '@nestjs/common';
-import { Knex } from 'knex';
-import { KNEX_TOKEN } from '../database/database.module';
+import { Injectable } from '@nestjs/common';
+import { PrismaService } from '../prisma/prisma.service';
+import { MenuItem, Restaurant } from '@prisma/client';
 
-export interface RestaurantRow {
-  id: string;
-  name: string;
+export type RestaurantRow = Omit<Restaurant, 'categories'> & {
   categories: string[];
-  rating: number;
-  delivery_fee: string;
-  delivery_time: string;
-  distance: string;
-  icon_name: string;
-  icon_color: string;
-  promoted: boolean;
-  cover_image: string;
-  created_at: Date;
-  updated_at: Date;
-}
-
-export interface MenuItemRow {
-  id: string;
-  restaurant_id: string;
-  name: string;
-  description: string;
-  price: number;
-  tab: 'popular' | 'mains' | 'drinks' | 'desserts';
-  icon_name: string;
-  image: string;
-  rating: number | null;
-  created_at: Date;
-  updated_at: Date;
-}
+};
+export type MenuItemRow = MenuItem;
 
 @Injectable()
 export class RestaurantService {
-  constructor(@Inject(KNEX_TOKEN) private readonly db: Knex) {}
+  constructor(private readonly prisma: PrismaService) {}
 
   async findAll(category?: string): Promise<RestaurantRow[]> {
-    const query = this.db<RestaurantRow>('restaurants')
-      .orderBy('promoted', 'desc')
-      .orderBy('rating', 'desc');
+    const rows = await this.prisma.restaurant.findMany({
+      include: { categories: { include: { category: true } } },
+      where: category
+        ? { categories: { some: { category: { name: category } } } }
+        : undefined,
+      orderBy: [{ promoted: 'desc' }, { rating: 'desc' }],
+    });
 
-    if (category) {
-      query.whereRaw('? = ANY(categories)', [category]);
-    }
-
-    return query.select('*');
+    return rows.map((r) => ({
+      ...r,
+      categories: r.categories.map((rc) => rc.category.name),
+    }));
   }
 
-  async findOne(id: string): Promise<RestaurantRow | undefined> {
-    return this.db<RestaurantRow>('restaurants').where({ id }).first();
+  async findOne(id: string): Promise<RestaurantRow | null> {
+    const row = await this.prisma.restaurant.findUnique({
+      where: { id },
+      include: { categories: { include: { category: true } } },
+    });
+
+    if (!row) return null;
+
+    return {
+      ...row,
+      categories: row.categories.map((rc) => rc.category.name),
+    };
   }
 
   async findMenu(restaurantId: string): Promise<MenuItemRow[]> {
-    return this.db<MenuItemRow>('menu_items')
-      .where({ restaurant_id: restaurantId })
-      .orderBy('tab')
-      .select('*');
+    return this.prisma.menuItem.findMany({
+      where: { restaurant_id: restaurantId },
+      orderBy: { tab: 'asc' },
+    });
   }
 }

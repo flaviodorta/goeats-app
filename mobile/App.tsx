@@ -12,18 +12,20 @@ type AppState = 'loading' | 'onboarding' | 'home';
 export default function App() {
   const [appState, setAppState] = useState<AppState>('loading');
   const loadAuth = useAuthStore((s) => s.loadAuth);
+  const clearAuth = useAuthStore((s) => s.clearAuth);
+
+  // clearAuth();
 
   useEffect(() => {
-    Promise.all([
-      AsyncStorage.getItem('hasSeenOnboarding'),
-      loadAuth(),
-    ]).then(([value]) => {
-      if (value === 'true') {
-        setAppState('home');
-      } else {
-        setAppState('onboarding');
-      }
-    });
+    Promise.all([AsyncStorage.getItem('hasSeenOnboarding'), loadAuth()]).then(
+      ([value]) => {
+        if (value === 'true') {
+          setAppState('home');
+        } else {
+          setAppState('onboarding');
+        }
+      },
+    );
   }, []);
 
   return (

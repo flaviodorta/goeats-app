@@ -132,6 +132,9 @@ Quando o usuário escrever **"commit"**, Claude deve:
 2. Classificar o tipo: `feat`, `fix`, `refactor`, `chore`, `docs`, `style`
 3. Adicionar os arquivos relevantes (nunca `.env`, binários ou arquivos gerados)
 4. Commitar com mensagem no padrão Conventional Commits: `tipo(escopo): descrição curta`
+5. Atualizar o `STORY.md` com um resumo narrativo das mudanças e debates da sessão
+6. Fazer `git add STORY.md` e incluir no mesmo commit ou em commit separado `docs(story): update`
+7. Rodar `git push` automaticamente após o commit
 
 ---
 

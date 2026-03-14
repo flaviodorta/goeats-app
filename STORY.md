@@ -113,3 +113,44 @@ Cada microsserviço extraído na Fase 4 será um projeto NestJS independente com
 ---
 
 *Última atualização: Março de 2026 — API Fase 1 iniciada, Mobile Etapa 1 em andamento*
+
+---
+
+## A Migração para Prisma e os Primeiros Dados Reais — Março 2026
+
+Com o mobile consumindo a API real, chegou a hora de evoluir o backend. O Knex foi trocado pelo Prisma ORM — uma decisão pragmática para este momento do projeto. O Prisma acelera o desenvolvimento com tipagem automática gerada a partir do schema, migrations declarativas e um client gerado que elimina os falsos positivos do ESLint que o Knex gerava. O domínio ainda é mantido limpo: o Prisma vive na camada de infraestrutura, injetado via `PrismaService`.
+
+### Endereços Salvos: o Primeiro Bounded Context com Autenticação
+
+A primeira feature real com banco foi o módulo de endereços. A decisão arquitetural mais importante aqui foi sobre **como salvar o endereço no pedido**: não por FK, mas como snapshot — uma cópia dos dados no momento do pedido. Isso garante que edições futuras no endereço não alterem o histórico de pedidos.
+
+O modelo ficou assim:
+
+- `addresses` — tabela separada com relação N:1 com `users`
+- Primeiro endereço cadastrado vira default automaticamente
+- Troca de default é atômica: desativa todos, ativa o novo
+
+Para proteger as rotas foi criado o `JwtGuard` — um guard reutilizável que valida o Bearer token e injeta o `user` no request. Qualquer módulo que precisar de autenticação usa `@UseGuards(JwtGuard)`.
+
+No mobile, o CheckoutScreen ganhou um modal de endereços com duas faces: lista de endereços salvos (com seleção) e formulário de cadastro de novo endereço. O primeiro endereço cadastrado já vira o selecionado automaticamente.
+
+### Aprendizados de Infraestrutura
+
+Durante a configuração do banco surgiram dúvidas que revelaram conceitos importantes sobre Docker:
+
+- O PostgreSQL dentro de cada container sempre escuta na porta `5432` — isso é o padrão interno
+- O conflito acontece na porta **externa** (do computador), onde dois containers não podem dividir a mesma porta
+- A notação `5433:5432` significa: porta `5433` do host mapeia para porta `5432` do container
+- Alternativa sem Docker: um único PostgreSQL local com múltiplos bancos (`goeats`, `evoluna`, etc.) — mais simples para desenvolvimento
+
+### Segurança: Tokens Inválidos
+
+Foi implementado um interceptor no axios do mobile que detecta respostas `401` e chama `clearAuth()` automaticamente — evitando que o usuário fique preso em um estado autenticado com token expirado ou inválido sem perceber.
+
+### Como Salvar Cartão com Segurança
+
+Uma discussão importante antes de implementar pagamentos: **nunca salvar dados de cartão diretamente**. O fluxo correto é tokenização via gateway (Stripe, MercadoPago) — o app envia o cartão direto para o gateway, recebe um token opaco, e só esse token fica no banco junto com os últimos 4 dígitos e a bandeira (apenas para exibição). PIX e dinheiro não precisam de token.
+
+### Como Funcionam Cupons
+
+O sistema de cupons foi debatido antes de ser implementado. A estrutura: tabela `coupons` com tipo (`percentage`, `fixed`, `free_delivery`), valor, pedido mínimo, limite de uso e validade. Uma tabela `coupon_usages` evita uso duplo por usuário. A validação no backend verifica todas as condições em sequência antes de aplicar o desconto.

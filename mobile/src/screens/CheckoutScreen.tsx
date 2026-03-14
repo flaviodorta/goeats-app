@@ -1,8 +1,9 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
+  Modal,
   ScrollView,
   Text,
   TextInput,
@@ -12,6 +13,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Colors } from '../constants/colors';
+import { Address, createAddress, fetchAddresses, setDefaultAddress } from '../services/addresses';
 import { useAuthStore } from '../stores/authStore';
 import { useCartStore } from '../stores/cartStore';
 
@@ -48,6 +50,48 @@ export default function CheckoutScreen() {
   const [couponError, setCouponError] = useState('');
   const [loading, setLoading] = useState(false);
 
+  // Endereços
+  const [addresses, setAddresses] = useState<Address[]>([]);
+  const [selectedAddress, setSelectedAddress] = useState<Address | null>(null);
+  const [showAddressModal, setShowAddressModal] = useState(false);
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [addrForm, setAddrForm] = useState({
+    label: 'Casa', street: '', number: '', complement: '', neighborhood: '', city: '', state: 'SP', zip_code: '',
+  });
+  const [addrLoading, setAddrLoading] = useState(false);
+
+  useEffect(() => {
+    fetchAddresses()
+      .then((list) => {
+        setAddresses(list);
+        setSelectedAddress(list.find((a) => a.is_default) ?? list[0] ?? null);
+      })
+      .catch(() => {});
+  }, []);
+
+  const handleSelectAddress = async (addr: Address) => {
+    setSelectedAddress(addr);
+    setShowAddressModal(false);
+    if (!addr.is_default) {
+      await setDefaultAddress(addr.id).catch(() => {});
+    }
+  };
+
+  const handleAddAddress = async () => {
+    if (!addrForm.street || !addrForm.number || !addrForm.neighborhood || !addrForm.city || !addrForm.zip_code) return;
+    setAddrLoading(true);
+    try {
+      const created = await createAddress(addrForm);
+      setAddresses((prev) => [...prev, created]);
+      setSelectedAddress(created);
+      setShowAddForm(false);
+      setShowAddressModal(false);
+      setAddrForm({ label: 'Casa', street: '', number: '', complement: '', neighborhood: '', city: '', state: 'SP', zip_code: '' });
+    } finally {
+      setAddrLoading(false);
+    }
+  };
+
   const subtotal = totalPrice();
   const feeAmount = parseFeeAmount(restaurant?.deliveryFee ?? 'Grátis');
   const discount = couponApplied ? subtotal * (VALID_COUPONS[couponApplied] ?? 0) : 0;
@@ -67,8 +111,12 @@ export default function CheckoutScreen() {
   };
 
   const handleConfirm = async () => {
+    if (!selectedAddress) {
+      setShowAddressModal(true);
+      return;
+    }
     setLoading(true);
-    // Simula criação do pedido (POST /orders será implementado na Etapa 2 API)
+    // POST /orders será implementado junto com o módulo de pedidos
     await new Promise((r) => setTimeout(r, 1200));
     const fakeOrderId = Math.random().toString(36).slice(2, 10).toUpperCase();
     clearCart();
@@ -105,19 +153,111 @@ export default function CheckoutScreen() {
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 140 }}>
         {/* Endereço */}
         <View className='mx-5 mt-4 rounded-2xl border bg-white p-4' style={{ borderColor: Colors.border }}>
-          <View className='flex-row items-center mb-3'>
-            <MaterialCommunityIcons name='map-marker-outline' size={18} color={Colors.primary} />
-            <Text style={{ fontFamily: 'Poppins_700Bold', fontSize: 15, color: Colors.textPrimary, marginLeft: 6 }}>
-              Endereço de entrega
-            </Text>
+          <View className='flex-row items-center justify-between mb-3'>
+            <View className='flex-row items-center'>
+              <MaterialCommunityIcons name='map-marker-outline' size={18} color={Colors.primary} />
+              <Text style={{ fontFamily: 'Poppins_700Bold', fontSize: 15, color: Colors.textPrimary, marginLeft: 6 }}>
+                Endereço de entrega
+              </Text>
+            </View>
+            <TouchableOpacity onPress={() => { setShowAddForm(false); setShowAddressModal(true); }} activeOpacity={0.7}>
+              <Text style={{ fontFamily: 'Poppins_600SemiBold', fontSize: 13, color: Colors.primary }}>
+                {selectedAddress ? 'Trocar' : 'Adicionar'}
+              </Text>
+            </TouchableOpacity>
           </View>
-          <Text style={{ fontFamily: 'Poppins_400Regular', fontSize: 13, color: Colors.textSecondary }}>
-            Entregando para: {user?.name}
-          </Text>
-          <Text style={{ fontFamily: 'Poppins_400Regular', fontSize: 12, color: Colors.disabled, marginTop: 2 }}>
-            Seleção de endereço disponível em breve
-          </Text>
+
+          {selectedAddress ? (
+            <>
+              <Text style={{ fontFamily: 'Poppins_600SemiBold', fontSize: 13, color: Colors.textPrimary }}>
+                {selectedAddress.label}
+              </Text>
+              <Text style={{ fontFamily: 'Poppins_400Regular', fontSize: 13, color: Colors.textSecondary, marginTop: 2 }}>
+                {selectedAddress.street}, {selectedAddress.number}
+                {selectedAddress.complement ? ` — ${selectedAddress.complement}` : ''}
+              </Text>
+              <Text style={{ fontFamily: 'Poppins_400Regular', fontSize: 12, color: Colors.disabled, marginTop: 1 }}>
+                {selectedAddress.neighborhood}, {selectedAddress.city} — {selectedAddress.state} · {selectedAddress.zip_code}
+              </Text>
+            </>
+          ) : (
+            <TouchableOpacity onPress={() => { setShowAddForm(true); setShowAddressModal(true); }} activeOpacity={0.7}>
+              <View className='flex-row items-center py-2'>
+                <MaterialCommunityIcons name='plus-circle-outline' size={16} color={Colors.primary} />
+                <Text style={{ fontFamily: 'Poppins_400Regular', fontSize: 13, color: Colors.primary, marginLeft: 6 }}>
+                  Nenhum endereço salvo. Adicionar agora
+                </Text>
+              </View>
+            </TouchableOpacity>
+          )}
         </View>
+
+        {/* Modal de endereços */}
+        <Modal visible={showAddressModal} animationType='slide' transparent onRequestClose={() => setShowAddressModal(false)}>
+          <TouchableOpacity style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.4)' }} activeOpacity={1} onPress={() => setShowAddressModal(false)} />
+          <View style={{ backgroundColor: '#FFF', borderTopLeftRadius: 24, borderTopRightRadius: 24, padding: 24, paddingBottom: insets.bottom + 24, marginTop: -20 }}>
+            <Text style={{ fontFamily: 'Poppins_700Bold', fontSize: 18, color: Colors.textPrimary, marginBottom: 16 }}>
+              {showAddForm ? 'Novo endereço' : 'Seus endereços'}
+            </Text>
+
+            {showAddForm ? (
+              <>
+                {[
+                  { key: 'label', placeholder: 'Apelido (ex: Casa, Trabalho)' },
+                  { key: 'zip_code', placeholder: 'CEP' },
+                  { key: 'street', placeholder: 'Rua / Avenida' },
+                  { key: 'number', placeholder: 'Número' },
+                  { key: 'complement', placeholder: 'Complemento (opcional)' },
+                  { key: 'neighborhood', placeholder: 'Bairro' },
+                  { key: 'city', placeholder: 'Cidade' },
+                  { key: 'state', placeholder: 'Estado (ex: SP)' },
+                ].map(({ key, placeholder }) => (
+                  <TextInput
+                    key={key}
+                    value={(addrForm as any)[key]}
+                    onChangeText={(v) => setAddrForm((f) => ({ ...f, [key]: v }))}
+                    placeholder={placeholder}
+                    placeholderTextColor={Colors.disabled}
+                    style={{
+                      fontFamily: 'Poppins_400Regular', fontSize: 14, color: Colors.textPrimary,
+                      borderWidth: 1, borderColor: Colors.border, borderRadius: 12, paddingHorizontal: 14,
+                      height: 44, marginBottom: 10,
+                    }}
+                  />
+                ))}
+                <View className='flex-row gap-3 mt-2'>
+                  <TouchableOpacity onPress={() => setShowAddForm(false)} className='flex-1 h-12 rounded-full items-center justify-center border' style={{ borderColor: Colors.border }} activeOpacity={0.8}>
+                    <Text style={{ fontFamily: 'Poppins_600SemiBold', fontSize: 14, color: Colors.textSecondary }}>Voltar</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity onPress={handleAddAddress} disabled={addrLoading} className='flex-1 h-12 rounded-full items-center justify-center' style={{ backgroundColor: Colors.primary }} activeOpacity={0.85}>
+                    {addrLoading ? <ActivityIndicator color='#FFF' /> : <Text style={{ fontFamily: 'Poppins_700Bold', fontSize: 14, color: '#FFF' }}>Salvar</Text>}
+                  </TouchableOpacity>
+                </View>
+              </>
+            ) : (
+              <>
+                {addresses.map((addr) => (
+                  <TouchableOpacity key={addr.id} onPress={() => handleSelectAddress(addr)} className='flex-row items-center py-3' style={{ borderBottomWidth: 1, borderBottomColor: Colors.border }} activeOpacity={0.7}>
+                    <MaterialCommunityIcons name='map-marker-outline' size={20} color={addr.id === selectedAddress?.id ? Colors.primary : Colors.textSecondary} />
+                    <View style={{ flex: 1, marginLeft: 10 }}>
+                      <Text style={{ fontFamily: 'Poppins_600SemiBold', fontSize: 14, color: Colors.textPrimary }}>{addr.label}</Text>
+                      <Text style={{ fontFamily: 'Poppins_400Regular', fontSize: 12, color: Colors.textSecondary }}>
+                        {addr.street}, {addr.number} — {addr.neighborhood}
+                      </Text>
+                    </View>
+                    {addr.id === selectedAddress?.id && <MaterialCommunityIcons name='check-circle' size={18} color={Colors.primary} />}
+                  </TouchableOpacity>
+                ))}
+                <TouchableOpacity onPress={() => setShowAddForm(true)} className='flex-row items-center py-3 mt-2' activeOpacity={0.7}>
+                  <MaterialCommunityIcons name='plus' size={20} color={Colors.primary} />
+                  <Text style={{ fontFamily: 'Poppins_600SemiBold', fontSize: 14, color: Colors.primary, marginLeft: 10 }}>
+                    Adicionar novo endereço
+                  </Text>
+                </TouchableOpacity>
+              </>
+            )}
+          </View>
+        </Modal>
 
         {/* Itens */}
         <View className='mx-5 mt-3 rounded-2xl border bg-white p-4' style={{ borderColor: Colors.border }}>

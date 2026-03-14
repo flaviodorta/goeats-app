@@ -71,13 +71,34 @@ model MenuItem {
 }
 
 model User {
-  id            String   @id @default(uuid())
+  id            String    @id @default(uuid())
   name          String
-  email         String   @unique
+  email         String    @unique
   password_hash String
-  phone         String   @default("")
-  created_at    DateTime @default(now())
-  updated_at    DateTime @updatedAt
+  phone         String    @default("")
+  created_at    DateTime  @default(now())
+  updated_at    DateTime  @updatedAt
+
+  addresses     Address[]
 
   @@map("users")
+}
+
+model Address {
+  id           String   @id @default(uuid())
+  user_id      String
+  label        String   @default("Casa")
+  street       String
+  number       String
+  complement   String?
+  neighborhood String
+  city         String
+  state        String   @default("SP")
+  zip_code     String
+  is_default   Boolean  @default(false)
+  created_at   DateTime @default(now())
+
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@map("addresses")
 }

@@ -29,7 +29,7 @@ interface MenuItemRow {
 }
 
 // Mapeia resposta da API para o tipo do mobile
-function mapRestaurant(row: RestaurantRow): Restaurant {
+const mapRestaurant = (row: RestaurantRow): Restaurant => {
   return {
     id: row.id,
     name: row.name,
@@ -47,9 +47,9 @@ function mapRestaurant(row: RestaurantRow): Restaurant {
     productsCount: 0,
     menu: [],
   };
-}
+};
 
-function mapMenuItem(row: MenuItemRow): MenuItem {
+const mapMenuItem = (row: MenuItemRow): MenuItem => {
   return {
     id: row.id,
     name: row.name,
@@ -60,14 +60,14 @@ function mapMenuItem(row: MenuItemRow): MenuItem {
     image: row.image,
     rating: row.rating ?? 4.5,
   };
-}
+};
 
-export async function fetchRestaurants(): Promise<Restaurant[]> {
+export const fetchRestaurants = async (): Promise<Restaurant[]> => {
   const { data } = await api.get<RestaurantRow[]>('/restaurants');
   return data.map(mapRestaurant);
-}
+};
 
-export async function fetchRestaurantMenu(restaurantId: string): Promise<MenuItem[]> {
+export const fetchRestaurantMenu = async (restaurantId: string): Promise<MenuItem[]> => {
   const { data } = await api.get<MenuItemRow[]>(`/restaurants/${restaurantId}/menu`);
   return data.map(mapMenuItem);
-}
+};

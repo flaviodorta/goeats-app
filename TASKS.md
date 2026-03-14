@@ -46,33 +46,31 @@
 - [x] Substituir `mock.ts` por chamadas reais à API
 - [x] Tratar estados de loading e erro
 
----
-
 ## Etapa 2 — Checkout e autenticação (front + back)
 
 > Usuário vai finalizar o pedido, é redirecionado para login/cadastro e volta para o checkout.
 
 ### Mobile
 
-- [ ] Store: `authStore` — token JWT, dados do usuário
-- [ ] Ao ir para checkout sem login: redirecionar para `AuthNavigator`
-- [ ] Tela de Login (email + senha)
-- [ ] Tela de Cadastro (nome, email, senha, telefone)
-- [ ] Após login: retornar automaticamente para o checkout
-- [ ] Persistir sessão com AsyncStorage
-- [ ] Tela `CheckoutScreen` — resumo, endereço, forma de pagamento
+- [x] Store: `authStore` — token JWT, dados do usuário
+- [x] Ao ir para checkout sem login: redirecionar para tela de Login (no PublicNavigator)
+- [x] Tela de Login (email + senha)
+- [x] Tela de Cadastro (nome, email, senha, telefone)
+- [x] Após login: retornar automaticamente para o checkout (via `pendingCheckout` no cartStore)
+- [x] Persistir sessão com AsyncStorage
+- [x] Tela `CheckoutScreen` — resumo, endereço, forma de pagamento, cupom
 - [ ] Seleção de endereço salvo ou novo
-- [ ] Tela `PaymentScreen` — cartão, Pix, dinheiro
-- [ ] Cupom de desconto (campo + validação)
-- [ ] Tela `OrderConfirmationScreen` — animação de sucesso, número do pedido, ETA
+- [x] Seleção de pagamento na `CheckoutScreen` — cartão, Pix, dinheiro (unificado no Checkout)
+- [x] Cupom de desconto (campo + validação)
+- [x] Tela `OrderConfirmationScreen` — animação de sucesso, número do pedido, ETA
 
 ### API
 
-- [ ] `POST /auth/register` — cadastro
-- [ ] `POST /auth/login` — retorna JWT
+- [x] `POST /auth/register` — cadastro com hash bcrypt
+- [x] `POST /auth/login` — retorna JWT
 - [ ] `POST /auth/refresh` — renovar token
 - [ ] Guard de autenticação JWT (`@nestjs/passport` + `passport-jwt`)
-- [ ] Hash de senha com `bcrypt`
+- [x] Hash de senha com `bcrypt`
 - [ ] `POST /orders` — criar pedido (rota privada)
 - [ ] `GET /users/me/addresses` — listar endereços
 - [ ] `POST /users/me/addresses` — adicionar endereço

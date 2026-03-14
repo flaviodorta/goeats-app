@@ -25,7 +25,7 @@ Projeto de delivery app completo (usuário, loja, entregador). Objetivo de apren
 
 ### API (`/api/`)
 - NestJS com TypeScript
-- Knex — query builder (não ORM), mantém domínio limpo
+- Prisma ORM — schema em `api/prisma/schema.prisma`, client via `PrismaService`
 - PostgreSQL 16 via Docker Compose
 - Porta: 3333, prefixo global: `/api`
 
@@ -49,18 +49,18 @@ Cada `@Module()` do NestJS já nasce como Bounded Context — facilita extraçã
 
 ### Módulos NestJS
 - Cada módulo = um Bounded Context
-- `DatabaseModule` é `@Global()` — injeta Knex via token `KNEX_TOKEN`
-- Injeção: `@Inject(KNEX_TOKEN) private readonly db: Knex`
+- `PrismaModule` é `@Global()` — exporta `PrismaService` para todos os módulos
+- Injeção: `constructor(private readonly prisma: PrismaService)`
 
-### Knex
-- Usar generics nas queries: `this.db<MyRow>('table').select('*')`
-- `.returning<{ id: string }[]>('id')` para seeds/inserts com tipo correto
-- ESLint: `no-unsafe-assignment`, `no-unsafe-member-access`, `no-unsafe-return`, `no-unsafe-call` estão **desativados** (falsos positivos do Knex — não é bug)
+### Prisma
+- Schema em `api/prisma/schema.prisma`
+- Migrations: `npx prisma migrate dev --name <nome>`
+- Client gerado automaticamente após migrate
+- Seeds em `api/prisma/seed.ts` — rodar com `npm run seed`
 
 ### Banco de Dados
-- PostgreSQL com schemas separados por módulo (preparação para microsserviços)
-- Migrations em `api/src/database/migrations/`
-- Seeds em `api/src/database/seeds/`
+- PostgreSQL 16
+- Migrations gerenciadas pelo Prisma em `api/prisma/migrations/`
 
 ### Endpoints atuais
 - `GET /api/restaurants` — lista com filtro `?category=`
@@ -124,14 +124,26 @@ Credenciais: `postgres / postgres`, banco: `goeats`
 
 ---
 
+## Workflow com Claude
+
+### Commit
+Quando o usuário escrever **"commit"**, Claude deve:
+1. Rodar `git status` + `git diff` para analisar todas as mudanças
+2. Classificar o tipo: `feat`, `fix`, `refactor`, `chore`, `docs`, `style`
+3. Adicionar os arquivos relevantes (nunca `.env`, binários ou arquivos gerados)
+4. Commitar com mensagem no padrão Conventional Commits: `tipo(escopo): descrição curta`
+
+---
+
 ## Comandos Úteis
 
 ```bash
 # API
 cd api
-npm run start:dev          # dev server
-npx knex migrate:latest    # rodar migrations
-npx knex seed:run          # rodar seeds
+npm run start:dev                              # dev server
+npx prisma migrate dev --name <nome>           # criar e aplicar migration
+npx prisma migrate deploy                      # aplicar migrations existentes
+npm run seed                                   # rodar seeds
 
 # Mobile
 cd mobile

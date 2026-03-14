@@ -8,7 +8,7 @@ interface State {
   error: string | null;
 }
 
-export function useRestaurantMenu(restaurantId: string) {
+export const useRestaurantMenu = (restaurantId: string) => {
   const [state, setState] = useState<State>({
     menu: [],
     loading: true,

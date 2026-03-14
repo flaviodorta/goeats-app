@@ -9,16 +9,19 @@ export type CartItem = {
 type CartStore = {
   restaurant: Restaurant | null;
   items: Record<string, CartItem>;
+  pendingCheckout: boolean;
   addItem: (restaurant: Restaurant, item: MenuItem) => void;
   removeItem: (itemId: string) => void;
   clearCart: () => void;
   totalItems: () => number;
   totalPrice: () => number;
+  setPendingCheckout: (value: boolean) => void;
 };
 
 export const useCartStore = create<CartStore>((set, get) => ({
   restaurant: null,
   items: {},
+  pendingCheckout: false,
 
   addItem: (restaurant, item) => {
     const { restaurant: current } = get();
@@ -60,7 +63,9 @@ export const useCartStore = create<CartStore>((set, get) => ({
     });
   },
 
-  clearCart: () => set({ restaurant: null, items: {} }),
+  clearCart: () => set({ restaurant: null, items: {}, pendingCheckout: false }),
+
+  setPendingCheckout: (value) => set({ pendingCheckout: value }),
 
   totalItems: () =>
     Object.values(get().items).reduce((sum, c) => sum + c.quantity, 0),

@@ -5,18 +5,20 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import MenuItemComponent from '../components/menu/MenuItem';
 import { Colors } from '../constants/colors';
+import { useAuthStore } from '../stores/authStore';
 import { useCartStore } from '../stores/cartStore';
 
-function parseFeeAmount(fee: string): number {
+const parseFeeAmount = (fee: string): number => {
   if (fee === 'Grátis') return 0;
   const match = fee.match(/[\d,]+/);
   return match ? parseFloat(match[0].replace(',', '.')) : 0;
-}
+};
 
 export default function CartScreen() {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<any>();
-  const { restaurant, items, addItem, removeItem, totalPrice } = useCartStore();
+  const { restaurant, items, addItem, removeItem, totalPrice, setPendingCheckout } = useCartStore();
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
 
   const cartItems = Object.values(items);
   const subtotal = totalPrice();
@@ -133,6 +135,14 @@ export default function CartScreen() {
 
       <View className='absolute left-0 right-0 bottom-0 px-5 pt-3 bg-background' style={{ paddingBottom: insets.bottom + 12 }}>
         <TouchableOpacity
+          onPress={() => {
+            if (isAuthenticated) {
+              navigation.navigate('Checkout');
+            } else {
+              setPendingCheckout(true);
+              navigation.navigate('Login');
+            }
+          }}
           className='h-14 rounded-full items-center justify-center'
           style={{ backgroundColor: '#101010' }}
           activeOpacity={0.9}

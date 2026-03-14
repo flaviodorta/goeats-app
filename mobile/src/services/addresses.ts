@@ -2,7 +2,7 @@ import { useAuthStore } from '../stores/authStore';
 import { api } from './api';
 
 export interface Address {
-  id: string;
+  id: number;
   label: string;
   street: string;
   number: string;

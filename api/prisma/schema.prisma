@@ -15,7 +15,7 @@ enum MenuTab {
 }
 
 model Category {
-  id          String               @id @default(uuid())
+  id          Int                  @id @default(autoincrement())
   name        String               @unique
   restaurants RestaurantCategory[]
 
@@ -23,8 +23,8 @@ model Category {
 }
 
 model RestaurantCategory {
-  restaurant_id String
-  category_id   String
+  restaurant_id Int
+  category_id   Int
 
   restaurant Restaurant @relation(fields: [restaurant_id], references: [id], onDelete: Cascade)
   category   Category   @relation(fields: [category_id], references: [id], onDelete: Cascade)
@@ -34,7 +34,7 @@ model RestaurantCategory {
 }
 
 model Restaurant {
-  id            String               @id @default(uuid())
+  id            Int                  @id @default(autoincrement())
   name          String
   rating        Float
   delivery_fee  String
@@ -54,8 +54,8 @@ model Restaurant {
 }
 
 model MenuItem {
-  id            String     @id @default(uuid())
-  restaurant_id String
+  id            Int        @id @default(autoincrement())
+  restaurant_id Int
   name          String
   description   String
   price         Float
@@ -71,7 +71,7 @@ model MenuItem {
 }
 
 model User {
-  id            String    @id @default(uuid())
+  id            Int       @id @default(autoincrement())
   name          String
   email         String    @unique
   password_hash String
@@ -85,8 +85,8 @@ model User {
 }
 
 model Address {
-  id           String   @id @default(uuid())
-  user_id      String
+  id           Int      @id @default(autoincrement())
+  user_id      Int
   label        String   @default("Casa")
   street       String
   number       String

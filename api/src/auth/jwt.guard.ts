@@ -18,11 +18,11 @@ export class JwtGuard implements CanActivate {
     if (!auth?.startsWith('Bearer ')) throw new UnauthorizedException();
 
     try {
-      const payload = jwt.verify(auth.slice(7), JWT_SECRET) as {
-        sub: string;
+      const payload = jwt.verify(auth.slice(7), JWT_SECRET) as unknown as {
+        sub: number;
         email: string;
       };
-      (req as any).user = { id: payload.sub, email: payload.email };
+      (req as any).user = { id: Number(payload.sub), email: payload.email };
       return true;
     } catch {
       throw new UnauthorizedException();

@@ -123,10 +123,11 @@ export default function CheckoutScreen() {
     navigation.replace('OrderConfirmation', { orderId: fakeOrderId });
   };
 
-  if (!restaurant) {
-    navigation.goBack();
-    return null;
-  }
+  useEffect(() => {
+    if (!restaurant) {
+      navigation.goBack();
+    }
+  }, []);
 
   return (
     <View className='flex-1 bg-background'>

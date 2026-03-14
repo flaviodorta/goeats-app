@@ -2,7 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { create } from 'zustand';
 
 export type User = {
-  id: string;
+  id: number;
   name: string;
   email: string;
   phone: string;

@@ -11,7 +11,7 @@ const JWT_SECRET = process.env.JWT_SECRET ?? 'goeats_secret_dev';
 
 export interface AuthResponse {
   token: string;
-  user: { id: string; name: string; email: string; phone: string };
+  user: { id: number; name: string; email: string; phone: string };
 }
 
 @Injectable()

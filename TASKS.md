@@ -35,6 +35,8 @@
 ### API
 
 - [x] Criar projeto **NestJS** + TypeScript em `api/`
+- [x] Migrar de Knex para **Prisma ORM** (schema, migrations, PrismaService, PrismaModule global)
+- [x] Alterar todos os IDs de UUID strings para **Int autoincrement**
 - [x] Configurar Knex + PostgreSQL + migrations + seeds
 - [x] `GET /restaurants` — listar com filtro por categoria
 - [x] `GET /restaurants/:id` — detalhes
@@ -59,7 +61,7 @@
 - [x] Após login: retornar automaticamente para o checkout (via `pendingCheckout` no cartStore)
 - [x] Persistir sessão com AsyncStorage
 - [x] Tela `CheckoutScreen` — resumo, endereço, forma de pagamento, cupom
-- [ ] Seleção de endereço salvo ou novo
+- [x] Seleção de endereço salvo ou novo (modal com endereços da API + criação inline)
 - [x] Seleção de pagamento na `CheckoutScreen` — cartão, Pix, dinheiro (unificado no Checkout)
 - [x] Cupom de desconto (campo + validação)
 - [x] Tela `OrderConfirmationScreen` — animação de sucesso, número do pedido, ETA
@@ -69,17 +71,18 @@
 - [x] `POST /auth/register` — cadastro com hash bcrypt
 - [x] `POST /auth/login` — retorna JWT
 - [ ] `POST /auth/refresh` — renovar token
-- [ ] Guard de autenticação JWT (`@nestjs/passport` + `passport-jwt`)
+- [x] Guard de autenticação JWT — `JwtGuard` customizado (`CanActivate`), injeta `req.user`
 - [x] Hash de senha com `bcrypt`
 - [ ] `POST /orders` — criar pedido (rota privada)
-- [ ] `GET /users/me/addresses` — listar endereços
-- [ ] `POST /users/me/addresses` — adicionar endereço
-- [ ] `DELETE /users/me/addresses/:id` — remover endereço
+- [x] `GET /addresses` — listar endereços do usuário autenticado
+- [x] `POST /addresses` — adicionar endereço
+- [x] `PATCH /addresses/:id/default` — definir endereço padrão
+- [x] `DELETE /addresses/:id` — remover endereço
 
 ### Integração
 
-- [ ] Interceptor axios — anexar JWT em todas as requisições privadas
-- [ ] Tratar expiração de sessão (401 → redirecionar para login)
+- [x] Interceptor axios — auto-logout em 401 (clear authStore)
+- [x] Tratar expiração de sessão (401 → redirecionar para login)
 
 ---
 
@@ -238,9 +241,9 @@
 
 - [ ] `GET /users/me` — dados do usuário autenticado
 - [ ] `PATCH /users/me` — atualizar perfil
-- [ ] `GET /users/me/addresses` — listar endereços
-- [ ] `POST /users/me/addresses` — adicionar endereço
-- [ ] `DELETE /users/me/addresses/:id` — remover endereço
+- [x] `GET /addresses` — listar endereços (via AddressModule)
+- [x] `POST /addresses` — adicionar endereço
+- [x] `DELETE /addresses/:id` — remover endereço
 
 ### 5.6 Integração com mobile
 

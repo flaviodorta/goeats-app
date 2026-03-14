@@ -112,7 +112,7 @@ Cada microsserviço extraído na Fase 4 será um projeto NestJS independente com
 
 ---
 
-*Última atualização: Março de 2026 — API Fase 1 iniciada, Mobile Etapa 1 em andamento*
+*Última atualização: Março de 2026 — Autenticação, endereços e checkout integrados*
 
 ---
 
@@ -154,3 +154,21 @@ Uma discussão importante antes de implementar pagamentos: **nunca salvar dados 
 ### Como Funcionam Cupons
 
 O sistema de cupons foi debatido antes de ser implementado. A estrutura: tabela `coupons` com tipo (`percentage`, `fixed`, `free_delivery`), valor, pedido mínimo, limite de uso e validade. Uma tabela `coupon_usages` evita uso duplo por usuário. A validação no backend verifica todas as condições em sequência antes de aplicar o desconto.
+
+---
+
+## Refatoração das Migrations e IDs Inteiros — Março 2026
+
+### A Troca de UUID para Int autoincrement
+
+Os IDs do sistema foram migrados de `String @id @default(uuid())` para `Int @id @default(autoincrement())`. A motivação principal foi legibilidade no banco de dados durante o desenvolvimento — UUIDs poluem o DBeaver e dificultam inspeções rápidas. O tradeoff de segurança foi discutido: IDs sequenciais expõem o volume de dados (ex: `/orders/4` revela que há poucos pedidos), mas para um portfólio isso não é um problema real. Em produção, a solução é usar IDs opacos (UUIDs ou NanoIDs) nas rotas públicas enquanto os PKs internos continuam como inteiros.
+
+### O Problema das Migrations Antigas
+
+A mudança de tipos de ID criou um impasse clássico: as migrations existentes tinham `id TEXT NOT NULL` (do tempo de UUID), mas o `schema.prisma` já estava com `Int @id @default(autoincrement())`. O Prisma não consegue alterar o tipo de coluna quando há dados — e quando não há dados, tentou aplicar as migrations antigas (TEXT), fazendo o Prisma client (gerado do schema novo com Int) falhar no seed com `P2011: Null constraint violation on id`.
+
+A solução foi deletar as migrations antigas e criar uma migration inicial do zero, com `SERIAL` em todos os IDs. O `db:reset --force` agora dropa, remigra e re-popula em um único comando.
+
+### Fix: navigation.goBack() durante o render
+
+Um bug sutil foi corrigido no `CheckoutScreen`: o código chamava `navigation.goBack()` diretamente no corpo do componente (fora de qualquer handler ou effect), o que é proibido no React — navegação não pode acontecer durante a renderização. O fix foi mover para um `useEffect`, garantindo que a navegação só ocorre após a montagem do componente.

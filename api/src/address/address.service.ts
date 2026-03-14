@@ -20,14 +20,14 @@ export interface CreateAddressDto {
 export class AddressService {
   constructor(private readonly prisma: PrismaService) {}
 
-  list(userId: string) {
+  list(userId: number) {
     return this.prisma.address.findMany({
       where: { user_id: userId },
       orderBy: [{ is_default: 'desc' }, { created_at: 'desc' }],
     });
   }
 
-  async create(userId: string, dto: CreateAddressDto) {
+  async create(userId: number, dto: CreateAddressDto) {
     const count = await this.prisma.address.count({
       where: { user_id: userId },
     });
@@ -36,7 +36,7 @@ export class AddressService {
     });
   }
 
-  async setDefault(userId: string, id: string) {
+  async setDefault(userId: number, id: number) {
     await this.assertOwner(userId, id);
     await this.prisma.address.updateMany({
       where: { user_id: userId },
@@ -48,12 +48,12 @@ export class AddressService {
     });
   }
 
-  async remove(userId: string, id: string) {
+  async remove(userId: number, id: number) {
     await this.assertOwner(userId, id);
     await this.prisma.address.delete({ where: { id } });
   }
 
-  private async assertOwner(userId: string, id: string) {
+  private async assertOwner(userId: number, id: number) {
     const addr = await this.prisma.address.findUnique({ where: { id } });
     if (!addr) throw new NotFoundException('Endereço não encontrado');
     if (addr.user_id !== userId) throw new ForbiddenException();

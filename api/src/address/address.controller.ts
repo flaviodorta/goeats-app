@@ -32,12 +32,12 @@ export class AddressController {
 
   @Patch(':id/default')
   setDefault(@Req() req: Request, @Param('id') id: string) {
-    return this.addressService.setDefault((req as any).user.id, id);
+    return this.addressService.setDefault((req as any).user.id, +id);
   }
 
   @Delete(':id')
   @HttpCode(204)
   remove(@Req() req: Request, @Param('id') id: string) {
-    return this.addressService.remove((req as any).user.id, id);
+    return this.addressService.remove((req as any).user.id, +id);
   }
 }

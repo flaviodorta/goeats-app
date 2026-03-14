@@ -18,15 +18,15 @@ export class RestaurantController {
 
   @Get(':id')
   async findOne(@Param('id') id: string) {
-    const restaurant = await this.restaurantService.findOne(id);
+    const restaurant = await this.restaurantService.findOne(+id);
     if (!restaurant) throw new NotFoundException('Restaurante não encontrado');
     return restaurant;
   }
 
   @Get(':id/menu')
   async findMenu(@Param('id') id: string) {
-    const restaurant = await this.restaurantService.findOne(id);
+    const restaurant = await this.restaurantService.findOne(+id);
     if (!restaurant) throw new NotFoundException('Restaurante não encontrado');
-    return this.restaurantService.findMenu(id);
+    return this.restaurantService.findMenu(+id);
   }
 }

@@ -2,9 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { MenuItem, Restaurant } from '@prisma/client';
 
-export type RestaurantRow = Omit<Restaurant, 'categories'> & {
-  categories: string[];
-};
+export type RestaurantRow = Restaurant & { categories: string[] };
 export type MenuItemRow = MenuItem;
 
 @Injectable()
@@ -26,7 +24,7 @@ export class RestaurantService {
     }));
   }
 
-  async findOne(id: string): Promise<RestaurantRow | null> {
+  async findOne(id: number): Promise<RestaurantRow | null> {
     const row = await this.prisma.restaurant.findUnique({
       where: { id },
       include: { categories: { include: { category: true } } },
@@ -40,7 +38,7 @@ export class RestaurantService {
     };
   }
 
-  async findMenu(restaurantId: string): Promise<MenuItemRow[]> {
+  async findMenu(restaurantId: number): Promise<MenuItemRow[]> {
     return this.prisma.menuItem.findMany({
       where: { restaurant_id: restaurantId },
       orderBy: { tab: 'asc' },

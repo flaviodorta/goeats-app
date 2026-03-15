@@ -73,7 +73,9 @@
 - [ ] `POST /auth/refresh` — renovar token
 - [x] Guard de autenticação JWT — `JwtGuard` customizado (`CanActivate`), injeta `req.user`
 - [x] Hash de senha com `bcrypt`
-- [ ] `POST /orders` — criar pedido (rota privada)
+- [x] `POST /orders` — criar pedido com snapshot de preço, endereço e histórico de status
+- [x] `GET /orders` — listar pedidos do usuário autenticado
+- [x] `GET /orders/:id` — detalhes do pedido
 - [x] `GET /addresses` — listar endereços do usuário autenticado
 - [x] `POST /addresses` — adicionar endereço
 - [x] `PATCH /addresses/:id/default` — definir endereço padrão

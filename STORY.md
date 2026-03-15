@@ -157,6 +157,28 @@ O sistema de cupons foi debatido antes de ser implementado. A estrutura: tabela 
 
 ---
 
+## Módulo de Pedidos — Março 2026
+
+### Debate: status como enum ou tabela?
+
+Antes de implementar, discutimos se o status do pedido deveria ser um enum no PostgreSQL ou uma tabela de lookup. A conclusão foi manter o enum — os estados fazem parte da máquina de estados do domínio, quem os define é o código, não o banco. Enum garante tipo seguro no PostgreSQL e no TypeScript. Tabela de lookup faz sentido para dados genuinamente dinâmicos (categorias, motivos de cancelamento), não para estados fixos de um fluxo de negócio.
+
+O `current_status` no model `Order` serve para queries rápidas. O histórico completo fica em `OrderStatusHistory` — cada transição registra status, ator (`user`, `restaurant`, `driver`, `system`), actor_id e nota opcional. Toda criação de pedido gera automaticamente a entrada `pending / system`.
+
+### Debate: app do restaurante separado?
+
+Definido que o app do restaurante será um app React Native separado (`/mobile-store/`), assim como em produção (iFood Parceiros). Mesma API, módulos distintos, JWT com role diferente. Isso facilita o deploy independente e evita que o bundle do app do usuário cresça com código de lojista.
+
+### Snapshot de preço e endereço
+
+`OrderItem` armazena `name` e `price` no momento do pedido — se o restaurante editar um item depois, os pedidos antigos não são afetados. O mesmo vale para o endereço: os campos são copiados para `orders` em vez de usar FK para `addresses`. Isso evita que uma edição ou remoção do endereço quebre o histórico.
+
+### Cupom validado no backend
+
+A validação do cupom foi movida para o `OrderService`. O frontend envia o `coupon_code` e o backend aplica o desconto com a mesma lista hardcoded. A tabela de cupons real virá na Fase 2+ com `coupons` + `coupon_usages` para evitar uso duplo.
+
+---
+
 ## Refatoração das Migrations e IDs Inteiros — Março 2026
 
 ### A Troca de UUID para Int autoincrement

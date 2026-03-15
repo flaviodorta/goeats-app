@@ -30,8 +30,8 @@ export type PrivateStackParamList = {
   Cart: undefined;
   SearchResults: undefined;
   Checkout: undefined;
-  OrderConfirmation: { orderId: string };
-  OrderTracking: { orderId: string };
+  OrderConfirmation: { orderId: number };
+  OrderTracking: { orderId: number };
 };
 
 export type AuthStackParamList = {

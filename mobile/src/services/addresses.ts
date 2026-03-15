@@ -40,11 +40,11 @@ export const createAddress = async (payload: CreateAddressPayload): Promise<Addr
   return data;
 };
 
-export const setDefaultAddress = async (id: string): Promise<Address> => {
+export const setDefaultAddress = async (id: number): Promise<Address> => {
   const { data } = await api.patch<Address>(`/addresses/${id}/default`, {}, { headers: authHeaders() });
   return data;
 };
 
-export const deleteAddress = async (id: string): Promise<void> => {
+export const deleteAddress = async (id: number): Promise<void> => {
   await api.delete(`/addresses/${id}`, { headers: authHeaders() });
 };

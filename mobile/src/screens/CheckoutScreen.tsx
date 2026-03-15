@@ -14,6 +14,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Colors } from '../constants/colors';
 import { Address, createAddress, fetchAddresses, setDefaultAddress } from '../services/addresses';
+import { createOrder } from '../services/orders';
 import { useAuthStore } from '../stores/authStore';
 import { useCartStore } from '../stores/cartStore';
 
@@ -116,11 +117,31 @@ export default function CheckoutScreen() {
       return;
     }
     setLoading(true);
-    // POST /orders será implementado junto com o módulo de pedidos
-    await new Promise((r) => setTimeout(r, 1200));
-    const fakeOrderId = Math.random().toString(36).slice(2, 10).toUpperCase();
-    clearCart();
-    navigation.replace('OrderConfirmation', { orderId: fakeOrderId });
+    try {
+      const order = await createOrder({
+        restaurant_id: restaurant!.id,
+        payment_method: payment,
+        coupon_code: couponApplied ?? undefined,
+        delivery_fee: feeAmount,
+        address: {
+          street: selectedAddress.street,
+          number: selectedAddress.number,
+          complement: selectedAddress.complement,
+          neighborhood: selectedAddress.neighborhood,
+          city: selectedAddress.city,
+          state: selectedAddress.state,
+          zip_code: selectedAddress.zip_code,
+        },
+        items: Object.values(items).map((c) => ({
+          menu_item_id: +c.item.id,
+          quantity: c.quantity,
+        })),
+      });
+      clearCart();
+      navigation.replace('OrderConfirmation', { orderId: order.id });
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
